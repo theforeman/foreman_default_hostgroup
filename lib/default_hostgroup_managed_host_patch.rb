@@ -10,36 +10,15 @@ module DefaultHostgroupManagedHostPatch
   end
 
   module ClassMethods
-    def importHostAndFacts_with_apply_hostgroup yaml
-      orig_result = importHostAndFacts_without_apply_hostgroup(yaml)
+    def importHostAndFacts_with_apply_hostgroup hostname, facts, certname = nil
+      host, result = importHostAndFacts_without_apply_hostgroup(hostname, facts, certname)
       Rails.logger.debug "DefaultHostgroup: performing Hostgroup check"
-      # The aliased method just returns true/false so we have to reparse the yaml
-      # to find the host
-      unless Setting[:default_hostgroup] == ''
-        facts = YAML::load yaml
-        case facts
-          when Puppet::Node::Facts
-            certname = facts.name
-            name     = facts.values["fqdn"].downcase
-          when Hash
-            certname = facts["clientcert"] || facts["certname"]
-            name     = facts["fqdn"].downcase
-        end
-        h=nil
-        if name == certname or certname.nil?
-          h = Host.find_by_name name
-        else
-          h = Host.find_by_certname certname
-          h ||= Host.find_by_name name
-        end
-        # Now we can update it
-        if h.hostgroup.nil? and h.reports.empty?
-          h.hostgroup = Hostgroup.find_by_label(Setting[:default_hostgroup])
-          h.save
-          Rails.logger.debug "DefaultHostgroup: added #{h.name} to #{h.hostgroup.label}"
-        end
+      if host.hostgroup.nil? and host.reports.empty? # Definitely a new host...
+        host.hostgroup = Hostgroup.find_by_label(Setting[:default_hostgroup])
+        result = host.save
+        Rails.logger.debug "DefaultHostgroup: added #{host.name} to #{host.hostgroup.label}"
       end
-      orig_result
+      return host, result
     end
   end
 end
