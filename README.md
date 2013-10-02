@@ -5,11 +5,8 @@ a Hostgroup set.
 
 ## Installation
 
-Usual Rails Engine installation - add to your Gemfile:
-
-    gem 'foreman_default_hostgroup', :git => 'https://github.com/GregSutcliffe/foreman_default_hostgroup'
-
-then run `bundle update` and restart Foreman
+See [How_to_Install_a_Plugin](http://projects.theforeman.org/projects/foreman/wiki/How_to_Install_a_Plugin)
+for how to install Foreman plugins
 
 ## Usage
 
