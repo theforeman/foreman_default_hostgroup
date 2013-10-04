@@ -1,4 +1,3 @@
-require 'deface'
 require 'default_hostgroup_managed_host_patch'
 
 module ForemanDefaultHostgroup

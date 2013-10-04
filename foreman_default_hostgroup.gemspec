@@ -19,6 +19,4 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/GregSutcliffe/foreman_default_hostgroup}
   s.licenses = ["GPL-3"]
   s.summary = %q{Default Hostgroup Plugin for Foreman}
-
-  s.add_dependency "deface"
 end
