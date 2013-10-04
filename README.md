@@ -8,6 +8,13 @@ a Hostgroup set.
 See [How_to_Install_a_Plugin](http://projects.theforeman.org/projects/foreman/wiki/How_to_Install_a_Plugin)
 for how to install Foreman plugins
 
+## Compatibility
+
+| Foreman Version | Plugin Version |
+| --------------- | --------------:|
+| <= 1.2          | 0.1.0          |
+| >= 1.3          | 1.0.0          |
+
 ## Usage
 
 Go to `Settings -> DefaultHostgroup` and enter the name of the default
@@ -25,7 +32,6 @@ reports (i.e new Hosts only).
 ## TODO
 
 * Tests
-* Rewrite this in a less hacky way
 
 ## Contributing
 

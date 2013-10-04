@@ -13,9 +13,11 @@ module DefaultHostgroupManagedHostPatch
     def importHostAndFacts_with_apply_hostgroup hostname, facts, certname = nil
       host, result = importHostAndFacts_without_apply_hostgroup(hostname, facts, certname)
       Rails.logger.debug "DefaultHostgroup: performing Hostgroup check"
-      if host.hostgroup.nil? and host.reports.empty? # Definitely a new host...
+      # host.new_record? will only test for the early return in the core method, a real host
+      # will have already been saved at least once.
+      if host.present? && !host.new_record? && host.hostgroup.nil? && host.reports.empty?
         host.hostgroup = Hostgroup.find_by_label(Setting[:default_hostgroup])
-        result = host.save
+        host.save(:validate => false)
         Rails.logger.debug "DefaultHostgroup: added #{host.name} to #{host.hostgroup.label}"
       end
       return host, result
