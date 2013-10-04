@@ -21,8 +21,8 @@ Go to `Settings -> DefaultHostgroup` and enter the name of the default
 hostgroup. Leaving this blank disables the plugin. Nested Hostgroups should be
 specified with the full label, e.g. `Base/Level1/Level2`
 
-Once set, any upload to `/fact_values/create` for a Host with no Hostgroup set
-will cause the Hostgroup to be set to the value in the Settings. THis happens
+Once set, any fact upload to `/api/hosts/facts` for a Host with no Hostgroup set
+will cause the Hostgroup to be set to the value in the Settings. This happens
 *before* the ENC data is downloaded, meaning it applies for a Host's very first
 run.
 
