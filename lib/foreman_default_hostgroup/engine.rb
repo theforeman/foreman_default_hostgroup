@@ -15,5 +15,9 @@ module ForemanDefaultHostgroup
       ::Host::Managed.send :include, DefaultHostgroupManagedHostPatch
     end
 
+    rake_tasks do
+      load "default_hostgroup.rake"
+    end
+
   end
 end
