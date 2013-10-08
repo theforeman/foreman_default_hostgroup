@@ -26,4 +26,12 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     assert_equal @hostgroup, Host.find_by_name('sinn1636.lan').hostgroup
   end
 
+  test "an invalid hostgroup setting does nothing" do
+    setup_hostgroup
+    Setting[:default_hostgroup] = "doesnotexist"
+    raw = parse_json_fixture('/facts.json')
+    assert     Host.importHostAndFacts(raw['name'], raw['facts'])
+    refute Host.find_by_name('sinn1636.lan').hostgroup
+  end
+
 end
