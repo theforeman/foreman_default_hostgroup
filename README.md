@@ -13,7 +13,7 @@ for how to install Foreman plugins
 | Foreman Version | Plugin Version |
 | --------------- | --------------:|
 | <= 1.2          | 0.1.0          |
-| >= 1.3          | 1.0.0          |
+| >= 1.3          | 1.0.1          |
 
 ## Usage
 
