@@ -1,0 +1,2 @@
+# Need a config/environment.rb for rails.vim to work in engines
+config/environment.rb
