@@ -1,13 +1,9 @@
-require 'test_helper'
+require 'test_plugin_helper'
 
 class DefaultHostgroupTest < ActiveSupport::TestCase
   setup do
     disable_orchestration
     User.current = User.find_by_login "admin"
-
-    # this is not being run automatically by the
-    # initializers, for some strange reason....
-    Setting::DefaultHostgroup.load_defaults
   end
 
   def parse_json_fixture(relative_path)
@@ -15,6 +11,11 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
   end
 
   def setup_hostgroup
+    # The settings.yml fixture in Core wipes out the Setting table,
+    # so we use FactoryGirl to re-create it
+    FactoryGirl.create(:setting,
+                       name: 'default_hostgroup',
+                       category: 'Setting::DefaultHostgroup')
     @hostgroup = Hostgroup.create :name => "MyGroup"
     Setting[:default_hostgroup] = @hostgroup.name
   end
@@ -32,6 +33,13 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     raw = parse_json_fixture('/facts.json')
     assert     Host.importHostAndFacts(raw['name'], raw['facts'])
     refute Host.find_by_name('sinn1636.lan').hostgroup
+  end
+
+  # Contrived example to check new plugin factories are loaded
+  test "my factory exists" do
+    refute Environment.find_by_name('defaulthostgrouptest')
+    FactoryGirl.create(:environment)
+    assert Environment.find_by_name('defaulthostgrouptest')
   end
 
 end
