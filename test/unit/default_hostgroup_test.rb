@@ -14,8 +14,8 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     # The settings.yml fixture in Core wipes out the Setting table,
     # so we use FactoryGirl to re-create it
     FactoryGirl.create(:setting,
-                       name: 'default_hostgroup',
-                       category: 'Setting::DefaultHostgroup')
+                       :name => 'default_hostgroup',
+                       :category => 'Setting::DefaultHostgroup')
     @hostgroup = Hostgroup.create :name => "MyGroup"
     Setting[:default_hostgroup] = @hostgroup.name
   end
