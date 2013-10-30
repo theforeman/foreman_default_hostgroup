@@ -10,8 +10,8 @@ module DefaultHostgroupManagedHostPatch
   end
 
   module ClassMethods
-    def importHostAndFacts_with_apply_hostgroup hostname, facts, certname = nil
-      host, result = importHostAndFacts_without_apply_hostgroup(hostname, facts, certname)
+    def importHostAndFacts_with_apply_hostgroup hostname, facts, certname = nil, proxy_id = nil
+      host, result = importHostAndFacts_without_apply_hostgroup(hostname, facts, certname, proxy_id)
       Rails.logger.debug "DefaultHostgroup: performing Hostgroup check"
 
       unless valid_hostgroup?
