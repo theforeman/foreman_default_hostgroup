@@ -13,3 +13,7 @@ Rake::Task[:test].enhance do
   Rake::Task['test:default_hostgroup'].invoke
 end
 
+load 'tasks/jenkins.rake'
+Rake::Task["jenkins:unit"].enhance do
+  Rake::Task['test:default_hostgroup'].invoke
+end
