@@ -7,7 +7,8 @@ class Setting::DefaultHostgroup < ::Setting
 
       Setting.transaction do
         [
-          self.set('default_hostgroup', 'The default Hostgroup to place new Hosts in', ''),
+          self.set('force_hostgroup_match', 'Apply hostgroup matching even if a host already has one.', false),
+          self.set('force_hostgroup_match_only_new', 'Apply hostgroup matching only on new hosts', true),
         ].compact.each { |s| self.create s.update(:category => 'Setting::DefaultHostgroup')}
       end
 
