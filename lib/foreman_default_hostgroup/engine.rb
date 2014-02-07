@@ -11,6 +11,11 @@ module ForemanDefaultHostgroup
       require_dependency File.expand_path("../../../app/models/setting/default_hostgroup.rb", __FILE__) if (Setting.table_exists? rescue(false))
     end
 
+    initializer 'foreman_default_hostgroup.register_plugin', :after=> :finisher_hook do |app|
+      Foreman::Plugin.register :foreman_default_hostgroup do
+      end if (Rails.env == "development" or defined? Foreman::Plugin)
+    end
+
     config.to_prepare do
       ::Host::Managed.send :include, DefaultHostgroupManagedHostPatch
     end
