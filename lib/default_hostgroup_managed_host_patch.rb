@@ -22,15 +22,15 @@ module DefaultHostgroupManagedHostPatch
       # host.new_record? will only test for the early return in the core method, a real host
       # will have already been saved at least once.
       if host.present? && !host.new_record? && host.hostgroup.nil? && host.reports.empty?
-        host.hostgroup = Hostgroup.find_by_label(Setting[:default_hostgroup])
+        host.hostgroup = Hostgroup.find_by_title(Setting[:default_hostgroup])
         host.save(:validate => false)
-        Rails.logger.debug "DefaultHostgroup: added #{host.name} to #{host.hostgroup.label}"
+        Rails.logger.debug "DefaultHostgroup: added #{host.name} to #{host.hostgroup.title}"
       end
       return host, result
     end
 
     def valid_hostgroup?
-      Hostgroup.find_by_label(Setting[:default_hostgroup]) ? true : false
+      Hostgroup.find_by_title(Setting[:default_hostgroup]) ? true : false
     end
   end
 end
