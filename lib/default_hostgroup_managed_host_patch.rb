@@ -19,11 +19,18 @@ module DefaultHostgroupManagedHostPatch
       if Setting[:force_hostgroup_match_only_new]
         # host.new_record? will only test for the early return in the core method, a real host
         # will have already been saved at least once.
-        return host, result unless host.present? && !host.new_record? && host.hostgroup.nil? && host.reports.empty?
+        unless host.present? && !host.new_record? && host.hostgroup.nil? && host.reports.empty?
+
+          Rails.logger.debug "DefaultHostgroupMatch: skipping, host exists"
+          return host, result
+        end
       end
 
       unless Setting[:force_hostgroup_match]
-        return host, result if host.hostgroup.present?
+        if host.hostgroup.present?
+          Rails.logger.debug "DefaultHostgroupMatch: skipping, host has hostgroup"
+          return host, result
+        end
       end
 
       map = SETTINGS[:default_hostgroup][:map]
