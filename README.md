@@ -17,21 +17,26 @@ for how to install Foreman plugins
 
 ## Usage
 
-Go to `Settings -> DefaultHostgroup` and enter the name of the default
-hostgroup. Leaving this blank disables the plugin. Nested Hostgroups should be
-specified with the full label, e.g. `Base/Level1/Level2`
+The configuration is done inside foreman's plugin settings directory which is
+```~foreman/config/settings.plugins.d/```.
 
-Once set, any fact upload to `/api/hosts/facts` for a Host with no Hostgroup set
-will cause the Hostgroup to be set to the value in the Settings. This happens
-*before* the ENC data is downloaded, meaning it applies for a Host's very first
-run.
+You can simply copy ```default_hostgroup.yaml.example``` and adjust it to fit
+your needs. You should change the example settings as they might break your
+setup (very unlikely though).
 
-The plugin only sets the Hostgroup for Hosts which have no Hostgroup, and no
-reports (i.e new Hosts only).
+*Important Note:* You have to restart foreman in order to apply changes in
+```default_hostgroup.yaml```!
+
+There are also two more settings under ```Settings -> DefaultHostgroup```
+
+| Setting | Description |
+| ------- | ----------- |
+| ```force_hostgroup_match``` | Setting this to ```true``` will perform matching even on hosts that already have a hostgroup set. Enabling this needs ```force_hostgroup_match_only_new``` to be ```false```.  Default: ```false``` |
+| ```force_hostgroup_match_only_new``` | Setting this to ```true``` will only perform matching when a host uploads its facts for the first time, i.e. after provisioning or when adding an existing puppetmaster and thus its nodes into foreman. Default: ```true``` |
 
 ## TODO
 
-* Tests
+* Deface the Hostgroup UI to add the regular expressions directly into the Hostgroup
 
 ## Contributing
 
