@@ -10,11 +10,14 @@ module DefaultHostgroupManagedHostPatch
 
   module ClassMethods
     def import_host_and_facts_with_match_hostgroup hostname, facts, certname = nil, proxy_id = nil
-      raise Foreman::Exception.new "Could not load default_hostgroup settings, check config" unless SETTINGS[:default_hostgroup]
-      raise Foreman::Exception.new "Could not load default_hostgroup map from settings, check config." unless SETTINGS[:default_hostgroup][:map]
+      host, result = import_host_and_facts_without_match_hostgroup(hostname, facts, certname, proxy_id)
+
+      unless SETTINGS[:default_hostgroup] && SETTINGS[:default_hostgroup][:map]
+        Rails.logger.warn "DefaultHostgroupMatch: Could not load default_hostgroup map from settings, check config."
+        return host, result
+      end
 
       Rails.logger.debug "DefaultHostgroupMatch: performing Hostgroup match"
-      host, result = import_host_and_facts_without_match_hostgroup(hostname, facts, certname, proxy_id)
 
       if Setting[:force_hostgroup_match_only_new]
         # host.new_record? will only test for the early return in the core method, a real host
