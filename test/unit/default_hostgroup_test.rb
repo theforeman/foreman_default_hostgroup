@@ -35,11 +35,4 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     refute Host.find_by_name('sinn1636.lan').hostgroup
   end
 
-  # Contrived example to check new plugin factories are loaded
-  test "my factory exists" do
-    refute Environment.find_by_name('defaulthostgrouptest')
-    FactoryGirl.create(:environment)
-    assert Environment.find_by_name('defaulthostgrouptest')
-  end
-
 end
