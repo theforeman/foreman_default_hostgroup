@@ -13,7 +13,9 @@ for how to install Foreman plugins
 | Foreman Version | Plugin Version |
 | --------------- | --------------:|
 | <= 1.2          | 0.1.0          |
-| >= 1.3          | 1.0.1          |
+|    1.3          | 1.0.1          |
+|    1.4          | 1.1.0          |
+| >= 1.5          | 2.0.0          |
 
 ## Usage
 
@@ -21,8 +23,14 @@ The configuration is done inside foreman's plugin settings directory which is
 ```~foreman/config/settings.plugins.d/```.
 
 You can simply copy ```default_hostgroup.yaml.example``` and adjust it to fit
-your needs. You should change the example settings as they might break your
-setup (very unlikely though).
+your needs. The simplest example would be:
+
+```
+---
+:default_hostgroup:
+    :map:
+        "Default": ".*"
+```
 
 *Important Note:* You have to restart foreman in order to apply changes in
 ```default_hostgroup.yaml```!
