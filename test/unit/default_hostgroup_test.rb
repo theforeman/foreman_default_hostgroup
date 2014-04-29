@@ -23,7 +23,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
   test "a new, fact-imported, host has a default hostgroup set" do
     setup_hostgroup
     raw = parse_json_fixture('/facts.json')
-    assert Host.importHostAndFacts(raw['name'], raw['facts'])
+    assert Host.import_host_and_facts(raw['name'], raw['facts'])
     assert_equal @hostgroup, Host.find_by_name('sinn1636.lan').hostgroup
   end
 
@@ -31,7 +31,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     setup_hostgroup
     Setting[:default_hostgroup] = "doesnotexist"
     raw = parse_json_fixture('/facts.json')
-    assert     Host.importHostAndFacts(raw['name'], raw['facts'])
+    assert Host.import_host_and_facts(raw['name'], raw['facts'])
     refute Host.find_by_name('sinn1636.lan').hostgroup
   end
 
