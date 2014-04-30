@@ -20,9 +20,9 @@ for how to install Foreman plugins
 ## Usage
 
 The configuration is done inside foreman's plugin settings directory which is
-```~foreman/config/settings.plugins.d/```.
+`~foreman/config/settings.plugins.d/`.
 
-You can simply copy ```default_hostgroup.yaml.example``` and adjust it to fit
+You can simply copy `default_hostgroup.yaml.example` and adjust it to fit
 your needs. The simplest example would be:
 
 ```
@@ -33,14 +33,14 @@ your needs. The simplest example would be:
 ```
 
 *Important Note:* You have to restart foreman in order to apply changes in
-```default_hostgroup.yaml```!
+`default_hostgroup.yaml`!
 
-There are also two more settings under ```Settings -> DefaultHostgroup```
+There are also two more settings under `Settings -> DefaultHostgroup`
 
 | Setting | Description |
 | ------- | ----------- |
-| ```force_hostgroup_match``` | Setting this to ```true``` will perform matching even on hosts that already have a hostgroup set. Enabling this needs ```force_hostgroup_match_only_new``` to be ```false```.  Default: ```false``` |
-| ```force_hostgroup_match_only_new``` | Setting this to ```true``` will only perform matching when a host uploads its facts for the first time, i.e. after provisioning or when adding an existing puppetmaster and thus its nodes into foreman. Default: ```true``` |
+| `force_hostgroup_match` | Setting this to `true` will perform matching even on hosts that already have a hostgroup set. Enabling this needs `force_hostgroup_match_only_new` to be `false`.  Default: `false` |
+| `force_hostgroup_match_only_new` | Setting this to `true` will only perform matching when a host uploads its facts for the first time, i.e. after provisioning or when adding an existing puppetmaster and thus its nodes into foreman. Default: `true` |
 
 ## TODO
 
