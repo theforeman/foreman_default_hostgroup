@@ -40,7 +40,7 @@ module DefaultHostgroupManagedHostPatch
       facts_map = SETTINGS[:default_hostgroup][:facts_map]
       new_hostgroup = nil
 
-
+      Rails.logger.debug "Trying to check facts_map settings..."
       facts_map.each do |group, fact|
         Rails.logger.debug "Hostgroup = #{group}"
         fact.each do |fact_name, match|
@@ -48,6 +48,7 @@ module DefaultHostgroupManagedHostPatch
           Rails.logger.debug "match = #{match}"
         end
       end
+      Rails.logger.debug "Finished trying to check facts_map settings..."
 
       map.each do |hostgroup, regex|
         unless valid_hostgroup?(hostgroup)
