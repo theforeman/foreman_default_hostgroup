@@ -61,7 +61,7 @@ module DefaultHostgroupManagedHostPatch
             Rails.logger.info "Fact = #{fact_name}"
             Rails.logger.info "Regex = #{fact_regex}"
           if Regexp.new(fact_regex).match(host_fact_value)
-            Rails.logger.info "#{host_fact_value} matches ${fact_regex}"
+            Rails.logger.info "#{host_fact_value} matches #{fact_regex}"
           end
         end
       end
