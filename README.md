@@ -23,13 +23,14 @@ The configuration is done inside foreman's plugin settings directory which is
 `~foreman/config/settings.plugins.d/`.
 
 You can simply copy `default_hostgroup.yaml.example` and adjust it to fit
-your needs. The simplest example would be:
+your needs. The format is shown in the example. The simplest form would be:
 
 ```
 ---
 :default_hostgroup:
-    :map:
-        "Default": ".*"
+  :facts_map:
+    "Default":
+      "hostname": ".*"
 ```
 
 *Important Note:* You have to restart foreman in order to apply changes in
