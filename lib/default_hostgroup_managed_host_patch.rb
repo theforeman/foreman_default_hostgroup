@@ -51,6 +51,9 @@ module DefaultHostgroupManagedHostPatch
         end
       end
 
+      facts_map = SETTINGS[:default_hostgroup][:facts_map]
+      Rails.logger.debug "Facts map contains #{facts_map}"
+
       return host, result unless new_hostgroup
 
       host.hostgroup = new_hostgroup
