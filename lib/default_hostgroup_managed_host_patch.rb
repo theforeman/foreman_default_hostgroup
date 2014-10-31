@@ -37,6 +37,9 @@ module DefaultHostgroupManagedHostPatch
       end
 
       map = SETTINGS[:default_hostgroup][:map]
+      facts_map = SETTINGS[:default_hostgroup][:facts_map]
+      Rails.logger.debug "Facts Map contains #{facts_map}"
+
       new_hostgroup = nil
 
       map.each do |hostgroup, regex|
