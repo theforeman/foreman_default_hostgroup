@@ -12,7 +12,7 @@ module DefaultHostgroupManagedHostPatch
     def import_host_and_facts_with_match_hostgroup hostname, facts, certname = nil, proxy_id = nil
       host, result = import_host_and_facts_without_match_hostgroup(hostname, facts, certname, proxy_id)
 
-      unless SETTINGS[:default_hostgroup] && SETTINGS[:default_hostgroup][:map] || SETTINGS[:default_hostgroup][:facts_map]
+      unless SETTINGS[:default_hostgroup] && SETTINGS[:default_hostgroup][:facts_map]
         Rails.logger.warn "DefaultHostgroupMatch: Could not load default_hostgroup map from settings, check config."
         return host, result
       end
@@ -36,23 +36,24 @@ module DefaultHostgroupManagedHostPatch
         end
       end
 
-      map = SETTINGS[:default_hostgroup][:map]
+      # map = SETTINGS[:default_hostgroup][:map]
       facts_map = SETTINGS[:default_hostgroup][:facts_map]
       new_hostgroup = nil
 
 
-      map.each do |hostgroup, regex|
-        unless valid_hostgroup?(hostgroup)
-          Rails.logger.error "DefaultHostgroupMatch: #{hostgroup} is not a valid hostgroup, skipping."
-          next
-        end
-        regex.gsub!(/(\A\/|\/\z)/, '')
-        if Regexp.new(regex).match(hostname)
-          new_hostgroup = Hostgroup.find_by_title(hostgroup)
-          break
-        end
-      end
+      # map.each do |hostgroup, regex|
+      #   unless valid_hostgroup?(hostgroup)
+      #     Rails.logger.error "DefaultHostgroupMatch: #{hostgroup} is not a valid hostgroup, skipping."
+      #     next
+      #   end
+      #   regex.gsub!(/(\A\/|\/\z)/, '')
+      #   if Regexp.new(regex).match(hostname)
+      #     new_hostgroup = Hostgroup.find_by_title(hostgroup)
+      #     break
+      #   end
+      # end
 
+      # Add some method for determining which match wins.
       facts_map.each do |group, fact|
         Rails.logger.info "Hostgroup = #{group}"
         fact.each do |fact_name, fact_regex|
@@ -62,6 +63,8 @@ module DefaultHostgroupManagedHostPatch
             Rails.logger.info "Regex = #{fact_regex}"
           if Regexp.new(fact_regex).match(host_fact_value)
             Rails.logger.info "#{host_fact_value} matches #{fact_regex}"
+            new_hostgroup = Hostgroup.find_by_title(group)
+            break
           end
         end
       end
