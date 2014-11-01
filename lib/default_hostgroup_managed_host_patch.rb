@@ -54,7 +54,7 @@ module DefaultHostgroupManagedHostPatch
       # end
 
       # Add some method for determining which match wins.
-      catch "FoundMatch"
+      catch "FoundMatch" do
         facts_map.each do |group, fact|
           Rails.logger.info "Hostgroup = #{group}"
           fact.each do |fact_name, fact_regex|
