@@ -65,8 +65,8 @@ module DefaultHostgroupManagedHostPatch
             if Regexp.new(fact_regex).match(host_fact_value)
               Rails.logger.info "#{host_fact_value} matches #{fact_regex}"
               new_hostgroup = Hostgroup.find_by_title(group)
-              throw :foundmatch
             end
+            throw :foundmatch if new_hostgroup
           end
         end
       end
