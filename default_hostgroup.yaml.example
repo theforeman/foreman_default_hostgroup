@@ -16,9 +16,9 @@
 ---
 :default_hostgroup:
   :facts_map:
-    :redhat
+    "redhat base":
       "osfamily": "RedHat"
-    :osx:
+    "osx/common":
       "osfamily": "Darwin"
-    :catchall:
+    "catchall":
       "hostname": ".*"
