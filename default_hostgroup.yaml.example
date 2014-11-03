@@ -3,8 +3,8 @@
 # Must be placed in ~foreman/config/settings.plugins.d/
 #
 # :facts_map:
-#   :<hostgroup>:
-#     :<fact_name>: <regex>
+#   <hostgroup>:
+#     <fact_name>: <regex>
 #
 # The regex can be written either with or without the enclosing slashes:
 #   ^test$      - valid
