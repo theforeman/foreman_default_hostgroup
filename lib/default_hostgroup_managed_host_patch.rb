@@ -36,24 +36,9 @@ module DefaultHostgroupManagedHostPatch
         end
       end
 
-      # map = SETTINGS[:default_hostgroup][:map]
       facts_map = SETTINGS[:default_hostgroup][:facts_map]
       new_hostgroup = nil
 
-
-      # map.each do |hostgroup, regex|
-      #   unless valid_hostgroup?(hostgroup)
-      #     Rails.logger.error "DefaultHostgroupMatch: #{hostgroup} is not a valid hostgroup, skipping."
-      #     next
-      #   end
-      #   regex.gsub!(/(\A\/|\/\z)/, '')
-      #   if Regexp.new(regex).match(hostname)
-      #     new_hostgroup = Hostgroup.find_by_title(hostgroup)
-      #     break
-      #   end
-      # end
-
-      # Add some method for determining which match wins.
       catch (:foundmatch) do
         facts_map.each do |group, fact|
           Rails.logger.info "Hostgroup = #{group}"
