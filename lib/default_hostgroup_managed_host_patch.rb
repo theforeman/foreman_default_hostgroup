@@ -39,23 +39,6 @@ module DefaultHostgroupManagedHostPatch
       facts_map = SETTINGS[:default_hostgroup][:facts_map]
       new_hostgroup = find_match(facts_map)
 
-      def find_match(facts_map)
-        facts_map.each do |group, fact|
-          return Hostgroup.find_by_title(hostgroup) if group_matches?(fact) and valid_hostgroup?(group)
-        end
-      end
-
-      def group_matches?(fact)
-        fact.each do |fact_name, fact_regex|
-          fact_regex.gsub!(/(\A\/|\/\z)/, '')
-          host_fact_value = host.facts_hash[fact_name]
-          Rails.logger.info "Fact = #{fact_name}"
-          Rails.logger.info "Regex = #{fact_regex}"
-          return true if Regexp.new(fact_regex).match(host_fact_value)
-        end
-        return false
-      end
-
       return host, result unless new_hostgroup
 
       host.hostgroup = new_hostgroup
@@ -63,6 +46,23 @@ module DefaultHostgroupManagedHostPatch
       Rails.logger.info "DefaultHostgroupMatch: #{hostname} added to #{new_hostgroup}"
 
       return host, result
+    end
+
+    def group_matches?(fact)
+      fact.each do |fact_name, fact_regex|
+        fact_regex.gsub!(/(\A\/|\/\z)/, '')
+        host_fact_value = host.facts_hash[fact_name]
+        Rails.logger.info "Fact = #{fact_name}"
+        Rails.logger.info "Regex = #{fact_regex}"
+        return true if Regexp.new(fact_regex).match(host_fact_value)
+      end
+      return false
+    end
+
+    def find_match(facts_map)
+      facts_map.each do |group, fact|
+        return Hostgroup.find_by_title(hostgroup) if group_matches?(fact) and valid_hostgroup?(group)
+      end
     end
 
     def valid_hostgroup?(hostgroup)
