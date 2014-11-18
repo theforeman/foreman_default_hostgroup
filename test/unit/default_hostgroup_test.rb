@@ -37,7 +37,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
 
   test "partial matching regex enclosed in /" do
     setup_hostgroup_match
-    SETTINGS[:default_hostgroup][:facts_map] = { "Test Partial" => '/\.lan$/' }
+    SETTINGS[:default_hostgroup][:facts_map] = { "Test Partial" => {'hostname' => '/\.lan$/' }}
 
     hostgroup = Hostgroup.create(:name => "Test Partial")
     raw = parse_json_fixture('/facts.json')
@@ -48,7 +48,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
 
   test "invalid hostgroup does nothing" do
     setup_hostgroup_match
-    SETTINGS[:default_hostgroup][:facts_map] = { "Nonexistent Group" => '.*', "Existent Group" => '/\.lan$/' }
+    SETTINGS[:default_hostgroup][:facts_map] = { "Nonexistent Group" => {'hostname' => '.*'}, "Existent Group" => {'hostname' => '/\.lan$/'} }
 
     hostgroup = Hostgroup.create(:name => "Existent Group")
     raw = parse_json_fixture('/facts.json')
