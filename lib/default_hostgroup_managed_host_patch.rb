@@ -38,7 +38,6 @@ module DefaultHostgroupManagedHostPatch
 
       facts_map = SETTINGS[:default_hostgroup][:facts_map]
       new_hostgroup = find_match(facts_map)
-      puts new_hostgroup.inspect
 
       return @host, result unless new_hostgroup
 
