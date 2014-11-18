@@ -10,7 +10,7 @@ module DefaultHostgroupManagedHostPatch
 
   module ClassMethods
     def import_host_and_facts_with_match_hostgroup hostname, facts, certname = nil, proxy_id = nil
-      host, result = import_host_and_facts_without_match_hostgroup(hostname, facts, certname, proxy_id)
+      @host, result = import_host_and_facts_without_match_hostgroup(hostname, facts, certname, proxy_id)
 
       unless SETTINGS[:default_hostgroup] && SETTINGS[:default_hostgroup][:facts_map]
         Rails.logger.warn "DefaultHostgroupMatch: Could not load default_hostgroup map from settings, check config."
