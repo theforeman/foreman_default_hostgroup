@@ -26,7 +26,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
 
   test "full matching regex not enclosed in /" do
     setup_hostgroup_match
-    SETTINGS[:default_hostgroup][:map] = { "Test Full" => '^sinn1636.lan$' }
+    SETTINGS[:default_hostgroup][:facts_map] = { "Test Full" => {'hostname' =>'^sinn1636.lan$'} }
 
     hostgroup = Hostgroup.create(:name => "Test Full")
     raw = parse_json_fixture('/facts.json')
@@ -37,7 +37,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
 
   test "partial matching regex enclosed in /" do
     setup_hostgroup_match
-    SETTINGS[:default_hostgroup][:map] = { "Test Partial" => '/\.lan$/' }
+    SETTINGS[:default_hostgroup][:facts_map] = { "Test Partial" => '/\.lan$/' }
 
     hostgroup = Hostgroup.create(:name => "Test Partial")
     raw = parse_json_fixture('/facts.json')
@@ -48,7 +48,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
 
   test "invalid hostgroup does nothing" do
     setup_hostgroup_match
-    SETTINGS[:default_hostgroup][:map] = { "Nonexistent Group" => '.*', "Existent Group" => '/\.lan$/' }
+    SETTINGS[:default_hostgroup][:facts_map] = { "Nonexistent Group" => '.*', "Existent Group" => '/\.lan$/' }
 
     hostgroup = Hostgroup.create(:name => "Existent Group")
     raw = parse_json_fixture('/facts.json')
@@ -59,7 +59,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
 
   test "default hostgroup" do
     setup_hostgroup_match
-    SETTINGS[:default_hostgroup][:map] = { "Test Default" => '.*' }
+    SETTINGS[:default_hostgroup][:facts_map] = { "Test Default" => '.*' }
 
     hostgroup = Hostgroup.create(:name => "Test Default")
     raw = parse_json_fixture('/facts.json')
@@ -70,7 +70,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
 
   test "host already has a hostgroup" do
     setup_hostgroup_match
-    SETTINGS[:default_hostgroup][:map] = { "Test Default" => '.*' }
+    SETTINGS[:default_hostgroup][:facts_map] = { "Test Default" => '.*' }
 
     hostgroup = Hostgroup.create(:name => "Test Group")
     Hostgroup.create(:name => "Test Default")
@@ -88,7 +88,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     setup_hostgroup_match
     Setting[:force_hostgroup_match] = true
     Setting[:force_hostgroup_match_only_new] = false
-    SETTINGS[:default_hostgroup][:map] = { "Test Default" => '.*' }
+    SETTINGS[:default_hostgroup][:facts_map] = { "Test Default" => '.*' }
 
     hostgroup = Hostgroup.create(:name => "Test Group")
     default = Hostgroup.create(:name => "Test Default")
@@ -105,7 +105,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
   test "hostgroup is not updated if host is not new" do
     setup_hostgroup_match
     Setting[:force_hostgroup_match] = true
-    SETTINGS[:default_hostgroup][:map] = { "Test Default" => '.*' }
+    SETTINGS[:default_hostgroup][:facts_map] = { "Test Default" => '.*' }
 
     hostgroup = Hostgroup.create(:name => "Test Group")
     Hostgroup.create(:name => "Test Default")
