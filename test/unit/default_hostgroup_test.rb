@@ -59,7 +59,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
 
   test "default hostgroup" do
     setup_hostgroup_match
-    SETTINGS[:default_hostgroup][:facts_map] = { "Test Default" => '.*' }
+    SETTINGS[:default_hostgroup][:facts_map] = { "Test Default" => {'hostname' =>'.*'} }
 
     hostgroup = Hostgroup.create(:name => "Test Default")
     raw = parse_json_fixture('/facts.json')
@@ -70,7 +70,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
 
   test "host already has a hostgroup" do
     setup_hostgroup_match
-    SETTINGS[:default_hostgroup][:facts_map] = { "Test Default" => '.*' }
+    SETTINGS[:default_hostgroup][:facts_map] = { "Test Default" => {'hostname' => '.*'} }
 
     hostgroup = Hostgroup.create(:name => "Test Group")
     Hostgroup.create(:name => "Test Default")
@@ -88,7 +88,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     setup_hostgroup_match
     Setting[:force_hostgroup_match] = true
     Setting[:force_hostgroup_match_only_new] = false
-    SETTINGS[:default_hostgroup][:facts_map] = { "Test Default" => '.*' }
+    SETTINGS[:default_hostgroup][:facts_map] = { "Test Default" => {'hostname' => '.*'} }
 
     hostgroup = Hostgroup.create(:name => "Test Group")
     default = Hostgroup.create(:name => "Test Default")
@@ -105,7 +105,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
   test "hostgroup is not updated if host is not new" do
     setup_hostgroup_match
     Setting[:force_hostgroup_match] = true
-    SETTINGS[:default_hostgroup][:facts_map] = { "Test Default" => '.*' }
+    SETTINGS[:default_hostgroup][:facts_map] = { "Test Default" => {'hostname' => '.*'} }
 
     hostgroup = Hostgroup.create(:name => "Test Group")
     Hostgroup.create(:name => "Test Default")
