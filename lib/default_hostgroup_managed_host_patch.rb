@@ -67,6 +67,7 @@ module DefaultHostgroupManagedHostPatch
         else
           Rails.logger.info "No match found for #{@host.name}"
           return false
+        end
       end
     end
 
