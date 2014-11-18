@@ -61,7 +61,7 @@ module DefaultHostgroupManagedHostPatch
 
     def find_match(facts_map)
       facts_map.each do |group, fact|
-        return Hostgroup.find_by_title(hostgroup) if group_matches?(fact) and valid_hostgroup?(group)
+        return Hostgroup.find_by_title(group) if group_matches?(fact) and valid_hostgroup?(group)
       end
     end
 
