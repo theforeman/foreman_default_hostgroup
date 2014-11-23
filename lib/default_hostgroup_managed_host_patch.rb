@@ -61,13 +61,10 @@ module DefaultHostgroupManagedHostPatch
 
     def find_match(facts_map)
       facts_map.each do |group_name, facts|
-        if group_matches?(facts) and valid_hostgroup?(group_name)
-          return Hostgroup.find_by_title(group_name)
-        else
-          Rails.logger.info "No match found for #{@host.name}"
-          next
-        end
+        return Hostgroup.find_by_title(group_name) if group_matches?(facts) and valid_hostgroup?(group_name)
       end
+      Rails.logger.info "No match ..."
+      return false
     end
 
     def valid_hostgroup?(hostgroup)
