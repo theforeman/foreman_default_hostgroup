@@ -57,6 +57,17 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     assert_equal hostgroup, Host.find_by_name('sinn1636.lan').hostgroup
   end
 
+  test "first matching hostgroup is used" do
+    setup_hostgroup_match
+    SETTINGS[:default_hostgroup][:facts_map] = { "First Group" => {'hostname' => '.*'}, "Second Group" => {'hostname' => '.*'} }
+
+    hostgroup = Hostgroup.create(:name => "First Group")
+    raw = parse_json_fixture('/facts.json')
+
+    assert Host.import_host_and_facts(raw['name'], raw['facts'])
+    assert_equal hostgroup, Host.find_by_name('sinn1636.lan').hostgroup
+  end
+
   test "default hostgroup" do
     setup_hostgroup_match
     SETTINGS[:default_hostgroup][:facts_map] = { "Test Default" => {'hostname' =>'.*'} }
