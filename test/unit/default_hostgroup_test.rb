@@ -46,7 +46,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     assert_equal hostgroup, Host.find_by_name('sinn1636.lan').hostgroup
   end
 
-  test "invalid hostgroup does nothing" do
+  test "invalid hostgroup name is ignored" do
     setup_hostgroup_match
     SETTINGS[:default_hostgroup][:facts_map] = { "Nonexistent Group" => {'hostname' => '.*'}, "Existent Group" => {'hostname' => '/\.lan$/'} }
 
