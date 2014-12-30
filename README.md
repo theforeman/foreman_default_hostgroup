@@ -33,6 +33,9 @@ your needs. The format is shown in the example. The simplest form would be:
     "Default":
       "hostname": ".*"
 ```
+If you are ugrading from plugin version 2.0.1 or older the format of this
+file changes and you will need modify `default_hostgroup.yaml.example` to
+follow the format above.
 
 *Important Note:* You have to restart foreman in order to apply changes in
 `default_hostgroup.yaml`!
