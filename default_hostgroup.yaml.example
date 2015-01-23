@@ -18,6 +18,11 @@
 ---
 :default_hostgroup:
   :facts_map:
+    "Go_agents":
+      "hostname":
+        - "go_agent1"
+        - "go_agent2"
+        - "go_agent[1][1-3]"
     "Redhat":
       "osfamily": "RedHat"
       "lsbdistcodename": "Santiago"

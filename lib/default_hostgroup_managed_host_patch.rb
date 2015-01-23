@@ -50,11 +50,13 @@ module DefaultHostgroupManagedHostPatch
 
     def group_matches?(fact)
       fact.each do |fact_name, fact_regex|
-        fact_regex.gsub!(/(\A\/|\/\z)/, '')
         host_fact_value = @host.facts_hash[fact_name]
-        Rails.logger.info "Fact = #{fact_name}"
-        Rails.logger.info "Regex = #{fact_regex}"
-        return true if Regexp.new(fact_regex).match(host_fact_value)
+        Array(fact_regex).each do |f_regex|
+          f_regex.gsub!(/(\A\/|\/\z)/, '')
+          Rails.logger.info "Fact = #{fact_name}"
+          Rails.logger.info "Regex = #{f_regex}"
+          return true if Regexp.new(f_regex).match(host_fact_value)
+        end
       end
       return false
     end

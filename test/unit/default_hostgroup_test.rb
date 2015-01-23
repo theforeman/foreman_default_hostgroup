@@ -24,6 +24,28 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     SETTINGS[:default_hostgroup] = Hash.new
   end
 
+  test "multiple regex matches for same fact enclosed in /" do
+    setup_hostgroup_match
+    SETTINGS[:default_hostgroup][:facts_map] = { "Go Agents" => {'hostname' => ["/go_agent1/", "/sinn1636.lan/", "/go_agent[1][1-3]/"] }}
+
+    hostgroup = Hostgroup.create(:name => "Go Agents")
+    raw = parse_json_fixture('/facts.json')
+
+    assert Host.import_host_and_facts(raw['name'], raw['facts'])
+    assert_equal hostgroup, Host.find_by_name('sinn1636.lan').hostgroup
+  end
+
+  test "multiple regex matches for same fact not enclosed in /" do
+    setup_hostgroup_match
+    SETTINGS[:default_hostgroup][:facts_map] = { "Go Agents" => {'hostname' => ["go_agent1", "sinn1636.lan", "go_agent[1][1-3]"] }}
+
+    hostgroup = Hostgroup.create(:name => "Go Agents")
+    raw = parse_json_fixture('/facts.json')
+
+    assert Host.import_host_and_facts(raw['name'], raw['facts'])
+    assert_equal hostgroup, Host.find_by_name('sinn1636.lan').hostgroup
+  end
+
   test "full matching regex not enclosed in /" do
     setup_hostgroup_match
     SETTINGS[:default_hostgroup][:facts_map] = { "Test Full" => {'hostname' =>'^sinn1636.lan$'} }
