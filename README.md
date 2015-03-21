@@ -5,8 +5,7 @@ a Hostgroup set.
 
 ## Installation
 
-See [How_to_Install_a_Plugin](http://projects.theforeman.org/projects/foreman/wiki/How_to_Install_a_Plugin)
-for how to install Foreman plugins
+See Foreman's [plugin installation documentation](http://theforeman.org/manuals/1.7/index.html#6.1InstallaPlugin).
 
 ## Compatibility
 
