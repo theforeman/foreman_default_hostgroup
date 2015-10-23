@@ -20,7 +20,7 @@ See Foreman's [plugin installation documentation](http://theforeman.org/manuals/
 ## Usage
 
 The configuration is done inside foreman's plugin settings directory which is
-`~foreman/config/settings.plugins.d/`.
+`/etc/foreman/plugins/`.
 
 You can simply copy `default_hostgroup.yaml.example` and adjust it to fit
 your needs. The format is shown in the example. The simplest form would be:
