@@ -1,21 +1,34 @@
+# Tests
 namespace :test do
   desc "Test DefaultHostgroup plugin"
-  Rake::TestTask.new(:default_hostgroup) do |t|
+  Rake::TestTask.new(:foreman_default_hostgroup) do |t|
     test_dir = File.join(File.dirname(__FILE__), '..', 'test')
     t.libs << ["test",test_dir]
     t.pattern = "#{test_dir}/**/*_test.rb"
     t.verbose = true
   end
-
 end
 
-Rake::Task[:test].enhance do
-  Rake::Task['test:default_hostgroup'].invoke
+namespace :foreman_default_hostgroup do
+  task :rubocop do
+    begin
+      require 'rubocop/rake_task'
+      RuboCop::RakeTask.new(:rubocop_foreman_default_hostgroup) do |task|
+        task.patterns = ["#{ForemanDefaultHostgroup::Engine.root}/app/**/*.rb",
+                         "#{ForemanDefaultHostgroup::Engine.root}/lib/**/*.rb",
+                         "#{ForemanDefaultHostgroup::Engine.root}/test/**/*.rb"]
+      end
+    rescue
+      puts 'Rubocop not loaded.'
+    end
+
+    Rake::Task['rubocop_foreman_default_hostgroup'].invoke
+  end
 end
+
+Rake::Task[:test].enhance ['test:foreman_default_hostgroup']
 
 load 'tasks/jenkins.rake'
-if Rake::Task.task_defined?(:'jenkins:setup')
-  Rake::Task["jenkins:unit"].enhance do
-    Rake::Task['test:default_hostgroup'].invoke
-  end
+if Rake::Task.task_defined?(:'jenkins:unit')
+  Rake::Task['jenkins:unit'].enhance ['test:foreman_default_hostgroup', 'foreman_default_hostgroup:rubocop']
 end
