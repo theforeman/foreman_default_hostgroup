@@ -1,4 +1,4 @@
-require 'default_hostgroup_managed_host_patch'
+require 'default_hostgroup_base_host_patch'
 
 module ForemanDefaultHostgroup
   #Inherit from the Rails module of the parent app (Foreman), not the plugin.
@@ -17,7 +17,7 @@ module ForemanDefaultHostgroup
     end
 
     config.to_prepare do
-      ::Host::Managed.send :include, DefaultHostgroupManagedHostPatch
+      ::Host::Base.send :include, DefaultHostgroupBaseHostPatch
     end
 
     rake_tasks do
