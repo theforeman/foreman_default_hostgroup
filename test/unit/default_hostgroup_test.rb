@@ -5,14 +5,11 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
   setup do
     disable_orchestration
     User.current = User.find_by_login 'admin'
+    setup_hostgroup_matchers
+    setup_host_and_facts
   end
 
-  def parse_json_fixture(relative_path)
-    JSON.parse(
-      File.read(File.expand_path(File.dirname(__FILE__) + relative_path)))
-  end
-
-  def setup_hostgroup_match
+  def setup_hostgroup_matchers
     # The settings.yml fixture in Core wipes out the Setting table,
     # so we use FactoryGirl to re-create it
     FactoryGirl.create(:setting,
@@ -21,153 +18,183 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     FactoryGirl.create(:setting,
                        name: 'force_hostgroup_match_only_new',
                        category: 'Setting::DefaultHostgroup')
+    # Set the defaults
     Setting[:force_hostgroup_match] = false
     Setting[:force_hostgroup_match_only_new] = true
+
+    # Mimic plugin config fron config file
+    FactoryGirl.create(:hostgroup, name: 'Test Default')
     SETTINGS[:default_hostgroup] = {}
-  end
-
-  test 'full matching regex not enclosed in /' do
-    setup_hostgroup_match
     SETTINGS[:default_hostgroup][:facts_map] = {
-      'Test Full' => { 'hostname' => '^sinn1636.lan$' } }
-
-    hostgroup = Hostgroup.create(name: 'Test Full')
-    raw = parse_json_fixture('/facts.json')
-
-    assert Host.import_host_and_facts(raw['name'], raw['facts'])
-    assert_equal hostgroup, Host.find_by_name('sinn1636.lan').hostgroup
-  end
-
-  test 'partial matching regex enclosed in /' do
-    setup_hostgroup_match
-    SETTINGS[:default_hostgroup][:facts_map] = {
-      'Test Partial' => { 'hostname' => '/\.lan$/' } }
-
-    hostgroup = Hostgroup.create(name: 'Test Partial')
-    raw = parse_json_fixture('/facts.json')
-
-    assert Host.import_host_and_facts(raw['name'], raw['facts'])
-    assert_equal hostgroup, Host.find_by_name('sinn1636.lan').hostgroup
-  end
-
-  test 'invalid hostgroup name is ignored' do
-    setup_hostgroup_match
-    SETTINGS[:default_hostgroup][:facts_map] = {
-      'Nonexistent Group' => { 'hostname' => '.*' },
-      'Existent Group'    => { 'hostname' => '/\.lan$/' }
+      'Test Default' => { 'hostname' => '.*' }
     }
-
-    hostgroup = Hostgroup.create(name: 'Existent Group')
-    raw = parse_json_fixture('/facts.json')
-
-    assert Host.import_host_and_facts(raw['name'], raw['facts'])
-    assert_equal hostgroup, Host.find_by_name('sinn1636.lan').hostgroup
   end
 
-  test 'first matching hostgroup is used' do
-    setup_hostgroup_match
-    SETTINGS[:default_hostgroup][:facts_map] = {
-      'First Group'  => { 'hostname' => '.*' },
-      'Second Group' => { 'hostname' => '.*' }
-    }
-
-    hostgroup = Hostgroup.create(name: 'First Group')
-    raw = parse_json_fixture('/facts.json')
-
-    assert Host.import_host_and_facts(raw['name'], raw['facts'])
-    assert_equal hostgroup, Host.find_by_name('sinn1636.lan').hostgroup
+  def setup_host_and_facts
+    raw = JSON.parse(File.read(File.expand_path(File.dirname(__FILE__) + '/facts.json')))
+    @name  = raw['name']
+    @host  = Host.import_host(raw['name'], 'puppet')
+    @facts = raw['facts']
   end
 
-  test 'invalid keys ignored' do
-    setup_hostgroup_match
-    SETTINGS[:default_hostgroup][:facts_map] = {
-      'First Group' => { 'nosuchfact' => '.*', 'hostname' => '.*' } }
+  context 'import_facts_with_match_hostgroup' do
+    test 'matched host is saved with new hostgroup' do
+      assert @host.import_facts(@facts)
+      assert_equal Hostgroup.find_by_name('Test Default'), Host.find_by_name(@name).hostgroup
+    end
 
-    hostgroup = Hostgroup.create(name: 'First Group')
-    raw = parse_json_fixture('/facts.json')
+    test 'matched host not updated if host already has a hostgroup' do
+      hostgroup = FactoryGirl.create(:hostgroup)
+      @host.hostgroup = hostgroup
+      @host.save(validate: false)
 
-    assert Host.import_host_and_facts(raw['name'], raw['facts'])
-    assert_equal hostgroup, Host.find_by_name('sinn1636.lan').hostgroup
+      assert @host.import_facts(@facts)
+      assert_equal hostgroup, Host.find_by_name(@name).hostgroup
+    end
+
+    test 'hostgroup is not updated if host is not new' do
+      @host.created_at = Time.current - 1000
+      @host.save(validate: false)
+
+      assert @host.import_facts(@facts)
+      refute Host.find_by_name(@name).hostgroup
+    end
   end
 
-  test 'unmatched values ignored' do
-    setup_hostgroup_match
-    SETTINGS[:default_hostgroup][:facts_map] = {
-      'First Group' => { 'hostname' => 'nosuchname', 'osfamily' => '.*' } }
+  context 'find_match' do
+    # takes a config map, returns a group or false
+    test 'match a single hostgroup' do
+      facts_map = SETTINGS[:default_hostgroup][:facts_map]
+      assert @host.import_facts_without_match_hostgroup(@facts)
+      assert_equal Hostgroup.find_by_name('Test Default'), @host.find_match(facts_map)
+    end
 
-    hostgroup = Hostgroup.create(name: 'First Group')
-    raw = parse_json_fixture('/facts.json')
+    test 'returns false for no match' do
+      facts_map = SETTINGS[:default_hostgroup][:facts_map] = {
+        'Test Default'     => { 'hostname' => 'nosuchhost' }
+      }
+      assert @host.import_facts_without_match_hostgroup(@facts)
+      refute @host.find_match(facts_map)
+    end
 
-    assert Host.import_host_and_facts(raw['name'], raw['facts'])
-    assert_equal hostgroup, Host.find_by_name('sinn1636.lan').hostgroup
+    test 'matches first available hostgroup' do
+      facts_map = SETTINGS[:default_hostgroup][:facts_map] = {
+        'Test Default'     => { 'hostname' => '.*' },
+        'Some Other Group' => { 'hostname' => '/\.lan$/' }
+      }
+      assert @host.import_facts_without_match_hostgroup(@facts)
+      assert_equal Hostgroup.find_by_name('Test Default'), @host.find_match(facts_map)
+    end
+
+    test 'nonexistant groups are ignored' do
+      facts_map = SETTINGS[:default_hostgroup][:facts_map] = {
+        'Some Other Group' => { 'hostname' => '.*' },
+        'Test Default'     => { 'hostname' => '/\.lan$/' }
+      }
+      assert @host.import_facts_without_match_hostgroup(@facts)
+      assert_equal Hostgroup.find_by_name('Test Default'), @host.find_match(facts_map)
+    end
   end
 
-  test 'default hostgroup' do
-    setup_hostgroup_match
-    SETTINGS[:default_hostgroup][:facts_map] = {
-      'Test Default' => { 'hostname' => '.*' } }
+  context 'group_matches?' do
+    # passing a hash of (group_name, regex) pairs
+    test 'full regex matches' do
+      regex = { 'hostname' => '^sinn1636.lan$' }
+      assert @host.import_facts_without_match_hostgroup(@facts)
+      assert @host.group_matches?(regex)
+    end
 
-    hostgroup = Hostgroup.create(name: 'Test Default')
-    raw = parse_json_fixture('/facts.json')
+    test 'partial regex matches' do
+      regex = { 'hostname' => '.lan$' }
+      assert @host.import_facts_without_match_hostgroup(@facts)
+      assert @host.group_matches?(regex)
+    end
 
-    assert Host.import_host_and_facts(raw['name'], raw['facts'])
-    assert_equal hostgroup, Host.find_by_name('sinn1636.lan').hostgroup
+    test 'regex slashes are stripped' do
+      regex = { 'hostname' => '/\.lan$/' }
+      assert @host.import_facts_without_match_hostgroup(@facts)
+      assert @host.group_matches?(regex)
+    end
+
+    test 'invalid keys are ignored' do
+      regex = { 'nosuchfact' => '.*' }
+      assert @host.import_facts_without_match_hostgroup(@facts)
+      refute @host.group_matches?(regex)
+    end
+
+    test 'unmatched values are ignored' do
+      regex = { 'hostname' => 'nosuchname' }
+      assert @host.import_facts_without_match_hostgroup(@facts)
+      refute @host.group_matches?(regex)
+    end
+
+    test 'multiple entries with invalid keys / values match' do
+      regex = {
+        'nosuchfact' => '.*',
+        'osfamily'   => 'nosuchos',
+        'hostname'   => '.lan$'
+      }
+      assert @host.import_facts_without_match_hostgroup(@facts)
+      assert @host.group_matches?(regex)
+    end
   end
 
-  test 'host already has a hostgroup' do
-    setup_hostgroup_match
-    SETTINGS[:default_hostgroup][:facts_map] = {
-      'Test Default' => { 'hostname' => '.*' } }
+  context 'settings_exist?' do
+    test 'true when Settings exist' do
+      h = FactoryGirl.create(:host)
+      assert h.settings_exist?
+    end
 
-    hostgroup = Hostgroup.create(name: 'Test Group')
-    Hostgroup.create(name: 'Test Default')
-    raw = parse_json_fixture('/facts.json')
-
-    host, _result = Host.import_host_and_facts_without_match_hostgroup(
-      raw['name'], raw['facts'])
-    host.hostgroup = hostgroup
-    host.save(validate: false)
-
-    assert Host.import_host_and_facts(raw['name'], raw['facts'])
-    assert_equal hostgroup, Host.find_by_name('sinn1636.lan').hostgroup
+    test 'false when Settings are missing' do
+      SETTINGS[:default_hostgroup] = {}
+      h = FactoryGirl.create(:host)
+      refute h.settings_exist?
+    end
   end
 
-  test 'force hostgroup match on host with existing hostgroup' do
-    setup_hostgroup_match
-    Setting[:force_hostgroup_match] = true
-    Setting[:force_hostgroup_match_only_new] = false
-    SETTINGS[:default_hostgroup][:facts_map] = {
-      'Test Default' => { 'hostname' => '.*' } }
+  context 'host_new_or_forced?' do
+    test 'true when host is new' do
+      h = FactoryGirl.create(:host, created_at: Time.current)
+      assert h.host_new_or_forced?
+    end
 
-    hostgroup = Hostgroup.create(name: 'Test Group')
-    default = Hostgroup.create(name: 'Test Default')
-    raw = parse_json_fixture('/facts.json')
+    test 'false when host has existed for > 300s' do
+      h = FactoryGirl.create(:host, created_at: Time.current - 1000)
+      refute h.host_new_or_forced?
+    end
 
-    host, _result = Host.import_host_and_facts_without_match_hostgroup(
-      raw['name'], raw['facts'])
-    host.hostgroup = hostgroup
-    host.save(validate: false)
+    test 'false when host has a hostgroup' do
+      h = FactoryGirl.create(:host, :with_hostgroup, created_at: Time.current)
+      refute h.host_new_or_forced?
+    end
 
-    assert Host.import_host_and_facts(raw['name'], raw['facts'])
-    assert_equal default, Host.find_by_name('sinn1636.lan').hostgroup
+    test 'false when host has reports' do
+      h = FactoryGirl.create(:host, :with_reports, created_at: Time.current)
+      refute h.host_new_or_forced?
+    end
+
+    test 'true when setting is forced' do
+      Setting[:force_hostgroup_match_only_new] = false
+      h = FactoryGirl.create(:host, :with_hostgroup, created_at: Time.current)
+      assert h.host_new_or_forced?
+    end
   end
 
-  test 'hostgroup is not updated if host is not new' do
-    setup_hostgroup_match
-    Setting[:force_hostgroup_match] = true
-    SETTINGS[:default_hostgroup][:facts_map] = {
-      'Test Default' => { 'hostname' => '.*' } }
+  context 'host_has_no_hostgroup_or_forced?' do
+    test 'true if host has no hostgroup' do
+      h = FactoryGirl.create(:host)
+      assert h.host_has_no_hostgroup_or_forced?
+    end
 
-    hostgroup = Hostgroup.create(name: 'Test Group')
-    Hostgroup.create(name: 'Test Default')
-    raw = parse_json_fixture('/facts.json')
+    test 'false if host has hostgroup' do
+      h = FactoryGirl.create(:host, :with_hostgroup)
+      refute h.host_has_no_hostgroup_or_forced?
+    end
 
-    host, _result = Host.import_host_and_facts_without_match_hostgroup(
-      raw['name'], raw['facts'])
-    host.hostgroup = hostgroup
-    host.save(validate: false)
-
-    assert Host.import_host_and_facts(raw['name'], raw['facts'])
-    assert_equal hostgroup, Host.find_by_name('sinn1636.lan').hostgroup
+    test 'true if host has hostgroup and setting forced' do
+      Setting[:force_hostgroup_match] = true
+      h = FactoryGirl.create(:host, :with_hostgroup)
+      assert h.host_has_no_hostgroup_or_forced?
+    end
   end
 end

@@ -2,6 +2,5 @@
 require 'test_helper'
 
 # Add plugin to FactoryGirl's paths
-FactoryGirl.definition_file_paths << File.join(
-  File.dirname(__FILE__), 'factories')
+FactoryGirl.definition_file_paths << File.join(File.dirname(__FILE__), 'factories')
 FactoryGirl.reload
