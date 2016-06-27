@@ -18,12 +18,16 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     FactoryGirl.create(:setting,
                        name: 'force_hostgroup_match_only_new',
                        category: 'Setting::DefaultHostgroup')
+    FactoryGirl.create(:setting,
+                       name: 'force_host_environment',
+                       category: 'Setting::DefaultHostgroup')
     # Set the defaults
     Setting[:force_hostgroup_match] = false
     Setting[:force_hostgroup_match_only_new] = true
+    Setting[:force_host_environment] = true
 
     # Mimic plugin config fron config file
-    FactoryGirl.create(:hostgroup, name: 'Test Default')
+    FactoryGirl.create(:hostgroup, :with_environment, name: 'Test Default')
     SETTINGS[:default_hostgroup] = {}
     SETTINGS[:default_hostgroup][:facts_map] = {
       'Test Default' => { 'hostname' => '.*' }
@@ -58,6 +62,21 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
 
       assert @host.import_facts(@facts)
       refute Host.find_by_name(@name).hostgroup
+    end
+  end
+
+  context 'force host environment setting' do
+    test 'environment is updated if enabled' do
+      h = FactoryGirl.create(:host, :with_environment, created_at: Time.current)
+      h.import_facts(@facts)
+      assert_equal Hostgroup.find_by_name('Test Default').environment, h.environment
+    end
+
+    test 'environment not updated if disabled' do
+      Setting[:force_host_environment] = false
+      h = FactoryGirl.create(:host, :with_environment, created_at: Time.current)
+      h.import_facts(@facts)
+      refute_equal Hostgroup.find_by_name('Test Default').environment, h.environment
     end
   end
 

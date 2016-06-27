@@ -22,6 +22,9 @@ module DefaultHostgroupBaseHostPatch
     return result unless new_hostgroup
 
     self.hostgroup = new_hostgroup
+    if Setting[:force_host_environment] == true
+      self.environment = new_hostgroup.environment
+    end
     save(validate: false)
     Rails.logger.info "DefaultHostgroupMatch: #{hostname} added to #{new_hostgroup}"
 
