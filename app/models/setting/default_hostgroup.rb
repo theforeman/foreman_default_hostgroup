@@ -10,6 +10,7 @@ class Setting::DefaultHostgroup < ::Setting
       [
         set('force_hostgroup_match', 'Apply hostgroup matching even if a host already has one.', false),
         set('force_hostgroup_match_only_new', 'Apply hostgroup matching only on new hosts', true),
+        self.set('force_hostgroup_match_all_regex', 'Apply hostgroup if all regular expressions matches', false),
         set('force_host_environment', "Apply hostgroup's environment to host even if a host already has a different one", true)
       ].compact.each { |s| create s.update(category: 'Setting::DefaultHostgroup') }
     end
