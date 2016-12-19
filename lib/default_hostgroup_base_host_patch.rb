@@ -41,12 +41,17 @@ module DefaultHostgroupBaseHostPatch
   end
 
   def group_matches?(facts)
-    facts.each do |fact_name, fact_regex|
-      fact_regex.gsub!(%r{(\A/|/\z)}, '')
+    facts.each do |fact_name, node_fact_value|
       host_fact_value = facts_hash[fact_name]
       Rails.logger.info "Fact = #{fact_name}"
-      Rails.logger.info "Regex = #{fact_regex}"
-      return true if Regexp.new(fact_regex).match(host_fact_value)
+      if Setting[:exact_hostgroup_match]
+        Rails.logger.info "Value = #{node_fact_value}"
+        return true if node_fact_value == host_fact_value
+      else
+        node_fact_value.gsub!(%r{(\A/|/\z)}, '')
+        Rails.logger.info "Regex = #{node_fact_value}"
+        return true if Regexp.new(node_fact_value).match(host_fact_value)
+      end
     end
     false
   end
