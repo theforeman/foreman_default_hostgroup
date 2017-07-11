@@ -21,10 +21,14 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     FactoryGirl.create(:setting,
                        name: 'force_host_environment',
                        category: 'Setting::DefaultHostgroup')
+    FactoryGirl.create(:setting,
+                       name: 'use_and_operator',
+                       category: 'Setting::DefaultHostgroup')
     # Set the defaults
     Setting[:force_hostgroup_match] = false
     Setting[:force_hostgroup_match_only_new] = true
     Setting[:force_host_environment] = true
+    Setting[:use_and_operator] = false
 
     # Mimic plugin config fron config file
     FactoryGirl.create(:hostgroup, :with_environment, name: 'Test Default')
