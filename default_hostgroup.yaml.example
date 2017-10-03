@@ -12,7 +12,7 @@
 #   ^test$      - valid
 #   /^test$/    - also valid
 #
-# List the regexes in the order of prority, you can have as many as you like. The
+# List the regexes in the order of priority, you can have as many as you like. The
 # first one to match will be used. Debug statements are written to the log if you
 # are getting the wrong group applied.
 ---
