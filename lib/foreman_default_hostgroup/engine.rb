@@ -5,6 +5,8 @@ module ForemanDefaultHostgroup
   # the plugin. Thus, inherits from ::Rails::Engine and not from
   # Rails::Engine
   class Engine < ::Rails::Engine
+    engine_name 'foreman_default_hostgroup'
+
     initializer 'foreman_default_hostgroup.load_default_settings',
                 before: :load_config_initializers do
       require_dependency File.expand_path(
