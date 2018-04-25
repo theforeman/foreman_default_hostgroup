@@ -1,34 +1,36 @@
 module DefaultHostgroupBaseHostPatch
   extend ActiveSupport::Concern
 
-  included do
-    alias_method_chain :import_facts, :match_hostgroup
+  module Overrides
+    def import_facts(facts, source_proxy = nil)
+      # Load the facts anyway, hook onto the end of it
+      result = super(facts, source_proxy)
+
+      return result unless settings_exist?
+
+      Rails.logger.debug 'DefaultHostgroupMatch: performing Hostgroup match'
+
+      return result unless host_new_or_forced?
+      return result unless host_has_no_hostgroup_or_forced?
+
+      facts_map = SETTINGS[:default_hostgroup][:facts_map]
+      new_hostgroup = find_match(facts_map)
+
+      return result unless new_hostgroup
+
+      self.hostgroup = new_hostgroup
+      if Setting[:force_host_environment] == true
+        self.environment = new_hostgroup.environment
+      end
+      save(validate: false)
+      Rails.logger.info "DefaultHostgroupMatch: #{hostname} added to #{new_hostgroup}"
+
+      result
+    end
   end
 
-  def import_facts_with_match_hostgroup(facts)
-    # Load the facts anyway, hook onto the end of it
-    result = import_facts_without_match_hostgroup(facts)
-
-    return result unless settings_exist?
-
-    Rails.logger.debug 'DefaultHostgroupMatch: performing Hostgroup match'
-
-    return result unless host_new_or_forced?
-    return result unless host_has_no_hostgroup_or_forced?
-
-    facts_map = SETTINGS[:default_hostgroup][:facts_map]
-    new_hostgroup = find_match(facts_map)
-
-    return result unless new_hostgroup
-
-    self.hostgroup = new_hostgroup
-    if Setting[:force_host_environment] == true
-      self.environment = new_hostgroup.environment
-    end
-    save(validate: false)
-    Rails.logger.info "DefaultHostgroupMatch: #{hostname} added to #{new_hostgroup}"
-
-    result
+  included do
+    prepend Overrides
   end
 
   def find_match(facts_map)
