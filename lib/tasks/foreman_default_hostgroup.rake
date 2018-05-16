@@ -1,11 +1,13 @@
+require 'rake/testtask'
 # Tests
 namespace :test do
   desc "Test DefaultHostgroup plugin"
   Rake::TestTask.new(:foreman_default_hostgroup) do |t|
-    test_dir = File.join(File.dirname(__FILE__), '..', 'test')
-    t.libs << ["test",test_dir]
+    test_dir = File.join(File.dirname(__FILE__), '../..', 'test')
+    t.libs << ['test', test_dir]
     t.pattern = "#{test_dir}/**/*_test.rb"
     t.verbose = true
+    t.warning = false
   end
 end
 
