@@ -1,11 +1,22 @@
 module DefaultHostgroupBaseHostPatch
   extend ActiveSupport::Concern
 
+  module ManagedOverrides
+    def import_facts(facts, source_proxy = nil, without = false)
+      super(facts, source_proxy)
+    end
+  end
+
   module Overrides
-    def import_facts(facts, source_proxy = nil)
+    def import_facts(facts, source_proxy = nil, without_alias = false)
       # Load the facts anyway, hook onto the end of it
       result = super(facts, source_proxy)
 
+      # Module#prepend removes the import_facts_without_match_hostgroup method, so use
+      # a flag to return here if needed
+      return result if without_alias
+
+      # Check settings are created
       return result unless settings_exist?
 
       Rails.logger.debug 'DefaultHostgroupMatch: performing Hostgroup match'
