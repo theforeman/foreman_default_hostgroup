@@ -17,6 +17,6 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,extra,config,db,lib}/**/*"] + ["LICENSE", "README.md","default_hostgroup.yaml.example"]
   s.test_files = Dir["test/**/*"]
   s.homepage = %q{http://github.com/GregSutcliffe/foreman_default_hostgroup}
-  s.licenses = ["GPL-3"]
+  s.license = "GPL-3.0"
   s.summary = %q{Default Hostgroup Plugin for Foreman}
 end
