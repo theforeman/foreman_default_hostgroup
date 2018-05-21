@@ -1,7 +1,7 @@
 require 'rake/testtask'
 # Tests
 namespace :test do
-  desc "Test DefaultHostgroup plugin"
+  desc 'Test DefaultHostgroup plugin'
   Rake::TestTask.new(:foreman_default_hostgroup) do |t|
     test_dir = File.join(File.dirname(__FILE__), '../..', 'test')
     t.libs << ['test', test_dir]
@@ -20,7 +20,7 @@ namespace :foreman_default_hostgroup do
                          "#{ForemanDefaultHostgroup::Engine.root}/lib/**/*.rb",
                          "#{ForemanDefaultHostgroup::Engine.root}/test/**/*.rb"]
       end
-    rescue
+    rescue StandardError
       puts 'Rubocop not loaded.'
     end
 

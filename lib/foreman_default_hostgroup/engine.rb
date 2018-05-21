@@ -9,7 +9,8 @@ module ForemanDefaultHostgroup
     initializer 'foreman_default_hostgroup.load_default_settings',
                 before: :load_config_initializers do
       require_dependency File.expand_path(
-        '../../../app/models/setting/default_hostgroup.rb', __FILE__)
+        '../../app/models/setting/default_hostgroup.rb', __dir__
+      )
     end
 
     initializer 'foreman_default_hostgroup.register_plugin',
@@ -23,10 +24,9 @@ module ForemanDefaultHostgroup
       begin
         ::Host::Base.send(:include, DefaultHostgroupBaseHostPatch)
         ::Host::Managed.send(:prepend, DefaultHostgroupBaseHostPatch::ManagedOverrides)
-      rescue => e
+      rescue StandardError => e
         Rails.logger.warn "ForemanDefaultHostgroup: skipping engine hook (#{e})"
       end
     end
-
   end
 end

@@ -2,13 +2,18 @@ module DefaultHostgroupBaseHostPatch
   extend ActiveSupport::Concern
 
   module ManagedOverrides
-    def import_facts(facts, source_proxy = nil, without = false)
+    # rubocop:disable Lint/UnusedMethodArgument
+    def import_facts(facts, source_proxy = nil, without_alias = false)
+      # rubocop:enable Lint/UnusedMethodArgument
       super(facts, source_proxy)
     end
   end
 
   module Overrides
+    # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
     def import_facts(facts, source_proxy = nil, without_alias = false)
+      # rubocop:enable Metrics/AbcSize,Metrics/CyclomaticComplexity
+
       # Load the facts anyway, hook onto the end of it
       result = super(facts, source_proxy)
 
@@ -30,9 +35,7 @@ module DefaultHostgroupBaseHostPatch
       return result unless new_hostgroup
 
       self.hostgroup = new_hostgroup
-      if Setting[:force_host_environment] == true
-        self.environment = new_hostgroup.environment
-      end
+      self.environment = new_hostgroup.environment if Setting[:force_host_environment] == true
       save(validate: false)
       Rails.logger.info "DefaultHostgroupMatch: #{hostname} added to #{new_hostgroup}"
 
@@ -46,7 +49,7 @@ module DefaultHostgroupBaseHostPatch
 
   def find_match(facts_map)
     facts_map.each do |group_name, facts|
-      hg = Hostgroup.find_by_title(group_name)
+      hg = Hostgroup.find_by(title: group_name)
       return hg if hg.present? && group_matches?(facts)
     end
     Rails.logger.info 'No match ...'
@@ -59,7 +62,7 @@ module DefaultHostgroupBaseHostPatch
       host_fact_value = facts_hash[fact_name]
       Rails.logger.info "Fact = #{fact_name}"
       Rails.logger.info "Regex = #{fact_regex}"
-      return true if Regexp.new(fact_regex).match(host_fact_value)
+      return true if Regexp.new(fact_regex).match?(host_fact_value)
     end
     false
   end

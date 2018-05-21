@@ -48,7 +48,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
   context 'import_facts_with_match_hostgroup' do
     test 'matched host is saved with new hostgroup' do
       assert @host.import_facts(@facts)
-      assert_equal Hostgroup.find_by_name('Test Default'), Host.find_by_name(@name).hostgroup
+      assert_equal Hostgroup.find_by(name: 'Test Default'), Host.find_by(name: @name).hostgroup
     end
 
     test 'matched host not updated if host already has a hostgroup' do
@@ -57,7 +57,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
       @host.save(validate: false)
 
       assert @host.import_facts(@facts)
-      assert_equal hostgroup, Host.find_by_name(@name).hostgroup
+      assert_equal hostgroup, Host.find_by(name: @name).hostgroup
     end
 
     test 'hostgroup is not updated if host is not new' do
@@ -65,7 +65,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
       @host.save(validate: false)
 
       assert @host.import_facts(@facts)
-      refute Host.find_by_name(@name).hostgroup
+      refute Host.find_by(name: @name).hostgroup
     end
   end
 
@@ -73,14 +73,14 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     test 'environment is updated if enabled' do
       h = FactoryBot.create(:host, :with_environment, created_at: Time.current)
       h.import_facts(@facts)
-      assert_equal Hostgroup.find_by_name('Test Default').environment, h.environment
+      assert_equal Hostgroup.find_by(name: 'Test Default').environment, h.environment
     end
 
     test 'environment not updated if disabled' do
       Setting[:force_host_environment] = false
       h = FactoryBot.create(:host, :with_environment, created_at: Time.current)
       h.import_facts(@facts)
-      refute_equal Hostgroup.find_by_name('Test Default').environment, h.environment
+      refute_equal Hostgroup.find_by(name: 'Test Default').environment, h.environment
     end
   end
 
@@ -89,7 +89,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     test 'match a single hostgroup' do
       facts_map = SETTINGS[:default_hostgroup][:facts_map]
       assert @host.import_facts(@facts, nil, true)
-      assert_equal Hostgroup.find_by_name('Test Default'), @host.find_match(facts_map)
+      assert_equal Hostgroup.find_by(name: 'Test Default'), @host.find_match(facts_map)
     end
 
     test 'returns false for no match' do
@@ -106,7 +106,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
         'Some Other Group' => { 'hostname' => '/\.lan$/' }
       }
       assert @host.import_facts(@facts, nil, true)
-      assert_equal Hostgroup.find_by_name('Test Default'), @host.find_match(facts_map)
+      assert_equal Hostgroup.find_by(name: 'Test Default'), @host.find_match(facts_map)
     end
 
     test 'nonexistant groups are ignored' do
@@ -115,7 +115,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
         'Test Default'     => { 'hostname' => '/\.lan$/' }
       }
       assert @host.import_facts(@facts, nil, true)
-      assert_equal Hostgroup.find_by_name('Test Default'), @host.find_match(facts_map)
+      assert_equal Hostgroup.find_by(name: 'Test Default'), @host.find_match(facts_map)
     end
   end
 

@@ -1,4 +1,6 @@
+# rubocop:disable Style/ClassAndModuleChildren
 class Setting::DefaultHostgroup < ::Setting
+  # rubocop:enable Style/ClassAndModuleChildren
   BLANK_ATTRS << 'default_hostgroup'
 
   def self.load_defaults

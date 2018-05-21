@@ -5,15 +5,18 @@ Rails:
 Style/Documentation:
   Enabled: false
 
-# Force before_filter until upgrade to Rails 4
-Rails/ActionFilter:
-  EnforcedStyle: filter
+Style/FrozenStringLiteralComment:
+  Enabled: false
 
 Metrics/MethodLength:
   Max: 20
 
 Metrics/LineLength:
-  Max: 111 # TODO: discuss and set this
+  Max: 130 # TODO: discuss and set this
+
+Metrics/BlockLength:
+  Exclude:
+    - 'test/**/*'
 
 Style/Next:
   Enabled: false
