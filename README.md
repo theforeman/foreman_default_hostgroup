@@ -17,6 +17,8 @@ See Foreman's [plugin installation documentation](https://theforeman.org/plugins
 |    1.5          | 2.0.1          |
 |    1.6 - 1.11   | 3.0.0          |
 | >= 1.12         | 4.0.0          |
+| >= 1.16         | 4.0.1          |
+| >= 1.16         | 5.0.0          |
 
 ## Usage
 
