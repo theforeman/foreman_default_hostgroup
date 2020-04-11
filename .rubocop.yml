@@ -11,7 +11,7 @@ Style/FrozenStringLiteralComment:
 Metrics/MethodLength:
   Max: 20
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 130 # TODO: discuss and set this
 
 Metrics/BlockLength:
@@ -26,3 +26,11 @@ Metrics/ClassLength:
   Exclude:
     - 'test/**/*'
 
+Style/HashEachMethods:
+  Enabled: false
+
+Style/HashTransformKeys:
+  Enabled: false
+
+Style/HashTransformValues:
+  Enabled: false

@@ -40,8 +40,8 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
 
   def setup_host_and_facts
     raw = JSON.parse(File.read(File.expand_path(File.dirname(__FILE__) + '/facts.json')))
-    @name  = raw['name']
-    @host  = Host.import_host(raw['name'], 'puppet')
+    @name = raw['name']
+    @host = Host.import_host(raw['name'], 'puppet')
     @facts = raw['facts']
   end
 
@@ -65,7 +65,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
       @host.save(validate: false)
 
       assert @host.import_facts(@facts)
-      refute Host.find_by(name: @name).hostgroup
+      assert_not Host.find_by(name: @name).hostgroup
     end
   end
 
@@ -80,7 +80,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
       Setting[:force_host_environment] = false
       h = FactoryBot.create(:host, :with_environment, created_at: Time.current)
       h.import_facts(@facts)
-      refute_equal Hostgroup.find_by(name: 'Test Default').environment, h.environment
+      assert_not_equal Hostgroup.find_by(name: 'Test Default').environment, h.environment
     end
   end
 
@@ -94,15 +94,15 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
 
     test 'returns false for no match' do
       facts_map = SETTINGS[:default_hostgroup][:facts_map] = {
-        'Test Default'     => { 'hostname' => 'nosuchhost' }
+        'Test Default' => { 'hostname' => 'nosuchhost' }
       }
       assert @host.import_facts(@facts, nil, true)
-      refute @host.find_match(facts_map)
+      assert_not @host.find_match(facts_map)
     end
 
     test 'matches first available hostgroup' do
       facts_map = SETTINGS[:default_hostgroup][:facts_map] = {
-        'Test Default'     => { 'hostname' => '.*' },
+        'Test Default' => { 'hostname' => '.*' },
         'Some Other Group' => { 'hostname' => '/\.lan$/' }
       }
       assert @host.import_facts(@facts, nil, true)
@@ -112,7 +112,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     test 'nonexistant groups are ignored' do
       facts_map = SETTINGS[:default_hostgroup][:facts_map] = {
         'Some Other Group' => { 'hostname' => '.*' },
-        'Test Default'     => { 'hostname' => '/\.lan$/' }
+        'Test Default' => { 'hostname' => '/\.lan$/' }
       }
       assert @host.import_facts(@facts, nil, true)
       assert_equal Hostgroup.find_by(name: 'Test Default'), @host.find_match(facts_map)
@@ -142,20 +142,20 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     test 'invalid keys are ignored' do
       regex = { 'nosuchfact' => '.*' }
       assert @host.import_facts(@facts, nil, true)
-      refute @host.group_matches?(regex)
+      assert_not @host.group_matches?(regex)
     end
 
     test 'unmatched values are ignored' do
       regex = { 'hostname' => 'nosuchname' }
       assert @host.import_facts(@facts, nil, true)
-      refute @host.group_matches?(regex)
+      assert_not @host.group_matches?(regex)
     end
 
     test 'multiple entries with invalid keys / values match' do
       regex = {
         'nosuchfact' => '.*',
-        'osfamily'   => 'nosuchos',
-        'hostname'   => '.lan$'
+        'osfamily' => 'nosuchos',
+        'hostname' => '.lan$'
       }
       assert @host.import_facts(@facts, nil, true)
       assert @host.group_matches?(regex)
@@ -171,7 +171,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     test 'false when Settings are missing' do
       SETTINGS[:default_hostgroup] = {}
       h = FactoryBot.create(:host)
-      refute h.settings_exist?
+      assert_not h.settings_exist?
     end
   end
 
@@ -183,17 +183,17 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
 
     test 'false when host has existed for > 300s' do
       h = FactoryBot.create(:host, created_at: Time.current - 1000)
-      refute h.host_new_or_forced?
+      assert_not h.host_new_or_forced?
     end
 
     test 'false when host has a hostgroup' do
       h = FactoryBot.create(:host, :with_hostgroup, created_at: Time.current)
-      refute h.host_new_or_forced?
+      assert_not h.host_new_or_forced?
     end
 
     test 'false when host has reports' do
       h = FactoryBot.create(:host, :with_reports, created_at: Time.current)
-      refute h.host_new_or_forced?
+      assert_not h.host_new_or_forced?
     end
 
     test 'true when setting is forced' do
@@ -211,7 +211,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
 
     test 'false if host has hostgroup' do
       h = FactoryBot.create(:host, :with_hostgroup)
-      refute h.host_has_no_hostgroup_or_forced?
+      assert_not h.host_has_no_hostgroup_or_forced?
     end
 
     test 'true if host has hostgroup and setting forced' do
