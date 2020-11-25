@@ -10,15 +10,16 @@ See Foreman's [plugin installation documentation](https://theforeman.org/plugins
 ## Compatibility
 
 | Foreman Version | Plugin Version |
-| --------------- | --------------:|
-| <= 1.2          | 0.1.0          |
-|    1.3          | 1.0.1          |
-|    1.4          | 1.1.0          |
-|    1.5          | 2.0.1          |
-|    1.6 - 1.11   | 3.0.0          |
-| >= 1.12         | 4.0.0          |
-| >= 1.16         | 4.0.1          |
-| >= 1.16         | 5.0.0          |
+| --------------- | -------------: |
+| <= 1.2          |          0.1.0 |
+| 1.3             |          1.0.1 |
+| 1.4             |          1.1.0 |
+| 1.5             |          2.0.1 |
+| 1.6 - 1.11      |          3.0.0 |
+| >= 1.12         |          4.0.0 |
+| >= 1.16         |          4.0.1 |
+| >= 1.16         |          5.0.0 |
+| >= 2.2.0        |          6.0.0 |
 
 ## Usage
 
@@ -44,9 +45,9 @@ follow the format above.
 
 There are also two more settings under `Settings -> DefaultHostgroup`
 
-| Setting | Description |
-| ------- | ----------- |
-| `force_hostgroup_match` | Setting this to `true` will perform matching even on hosts that already have a hostgroup set. Enabling this needs `force_hostgroup_match_only_new` to be `false`.  Default: `false` |
+| Setting                          | Description                                                                                                                                                                                                          |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `force_hostgroup_match`          | Setting this to `true` will perform matching even on hosts that already have a hostgroup set. Enabling this needs `force_hostgroup_match_only_new` to be `false`.  Default: `false`                                  |
 | `force_hostgroup_match_only_new` | Setting this to `true` will only perform matching when a host uploads its facts for the first time, i.e. after provisioning or when adding an existing puppetmaster and thus its nodes into foreman. Default: `true` |
 
 ## TODO
