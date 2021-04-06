@@ -16,7 +16,7 @@ module ForemanDefaultHostgroup
     initializer "foreman_default_hostgroup.register_plugin",
                 before: :finisher_hook do
       Foreman::Plugin.register :foreman_default_hostgroup do
-        requires_foreman ">= 2.0"
+        requires_foreman ">= 2.2"
       end
     end
 
