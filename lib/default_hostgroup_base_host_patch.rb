@@ -79,7 +79,7 @@ module DefaultHostgroupBaseHostPatch
     if Setting[:force_hostgroup_match_only_new]
       # hosts have already been saved during import_host, so test the creation age instead
       new_host = ((Time.current - self.host.created_at) < 300)
-      unless new_host && hostgroup.nil? && self.host.reports.empty?
+      unless new_host && self.host.hostgroup.nil? && self.host.reports.empty?
         Rails.logger.debug "DefaultHostgroupMatch: skipping, host exists"
         return false
       end
