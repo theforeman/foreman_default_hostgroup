@@ -36,6 +36,12 @@ your needs. The format is shown in the example. The simplest form would be:
     "Default":
       "hostname": ".*"
 ```
+
+`Default` is the host group name (more precisely title) that will be assigned if all its the rules matches.
+Under the host group name, there's a list of rules. If all of them (in this example just one) is matching,
+the host is assigned to the `Default` host group. The `hostname` is the name of the fact while the value `.*`
+is used as a regular expression. This rule means host with any `hostname` is added to the `Default` host group.
+
 If you are ugrading from plugin version 2.0.1 or older the format of this
 file changes and you will need modify `default_hostgroup.yaml.example` to
 follow the format above.
