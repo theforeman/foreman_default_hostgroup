@@ -18,13 +18,13 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     # so we use FactoryBot to re-create it
     FactoryBot.create(:setting,
                       name: 'force_hostgroup_match',
-                      category: 'Setting::DefaultHostgroup')
+                      category: 'Setting')
     FactoryBot.create(:setting,
                       name: 'force_hostgroup_match_only_new',
-                      category: 'Setting::DefaultHostgroup')
+                      category: 'Setting')
     FactoryBot.create(:setting,
                       name: 'force_host_environment',
-                      category: 'Setting::DefaultHostgroup')
+                      category: 'Setting')
     # Set the defaults
     Setting[:force_hostgroup_match] = false
     Setting[:force_hostgroup_match_only_new] = true
