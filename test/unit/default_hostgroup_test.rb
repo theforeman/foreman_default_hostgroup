@@ -31,7 +31,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     Setting[:force_host_environment] = true
 
     # Mimic plugin config fron config file
-    FactoryBot.create(:hostgroup, :with_environment, name: 'Test Default')
+    FactoryBot.create(:hostgroup, name: 'Test Default')
     SETTINGS[:default_hostgroup] = {}
     SETTINGS[:default_hostgroup][:facts_map] = {
       'Test Default' => { 'hostname' => '.*' }
@@ -66,21 +66,6 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
 
       assert @host.import_facts(@facts)
       assert_not Host.find_by(name: @name).hostgroup
-    end
-  end
-
-  context 'force host environment setting' do
-    test 'environment is updated if enabled' do
-      h = FactoryBot.create(:host, :with_environment, created_at: Time.current)
-      h.import_facts(@facts)
-      assert_equal Hostgroup.find_by(name: 'Test Default').environment, h.environment
-    end
-
-    test 'environment not updated if disabled' do
-      Setting[:force_host_environment] = false
-      h = FactoryBot.create(:host, :with_environment, created_at: Time.current)
-      h.import_facts(@facts)
-      assert_not_equal Hostgroup.find_by(name: 'Test Default').environment, h.environment
     end
   end
 
