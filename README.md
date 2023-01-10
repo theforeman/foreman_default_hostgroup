@@ -20,6 +20,7 @@ See Foreman's [plugin installation documentation](https://theforeman.org/plugins
 | >= 1.16         |          4.0.1 |
 | >= 1.16         |          5.0.0 |
 | >= 2.2.0        |          6.0.0 |
+| >= 3.0          |          7.0.0 |
 
 ## Usage
 
