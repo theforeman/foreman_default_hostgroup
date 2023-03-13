@@ -62,9 +62,9 @@ module DefaultHostgroupBaseHostPatch
       host_fact_value = self.host.facts[fact_name]
       Rails.logger.info "Fact = #{fact_name}"
       Rails.logger.info "Regex = #{fact_regex}"
-      return true if Regexp.new(fact_regex).match?(host_fact_value)
+      return false unless Regexp.new(fact_regex).match?(host_fact_value)
     end
-    false
+    true
   end
 
   def settings_exist?
