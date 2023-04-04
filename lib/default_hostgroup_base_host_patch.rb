@@ -47,9 +47,11 @@ module DefaultHostgroupBaseHostPatch
     prepend Overrides
   end
 
+
   def find_match(facts_map)
     facts_map.each do |group_name, facts|
-      hg = Hostgroup.find_by(title: group_name)
+      parsed_group_name = replace_facts_in_hostgroup_name(group_name)
+      hg = Hostgroup.find_by(title: parsed_group_name)
       return hg if hg.present? && group_matches?(facts)
     end
     Rails.logger.info "No match ..."
@@ -95,5 +97,33 @@ module DefaultHostgroupBaseHostPatch
       end
     end
     true
+  end
+
+  private
+
+  def replace_facts_in_hostgroup_name(hostgroup)
+    unless Setting[:replace_facts_in_hostgroup_name]
+      # If feature is not explicitly enabled, just return the string
+      if hostgroup =~ /\%\{(.*?)\}/
+        Rails.logger.info "DefaultHostgroupMatch: Found pattern in hostgroup name #{hostgroup}, but feature 'replace_facts_in_hostgroup_name' is disabled!"
+      end
+      return hostgroup
+    end
+
+    while hostgroup =~ /\%\{(.*?)\}/
+      parsed_fact_name = $1
+      # Check if the fact exists on the host
+      if self.host.facts[parsed_fact_name]
+        # Fact exists on the host, replace the value
+        Rails.logger.debug "DefaultHostgroupMatch: Replacing #{parsed_fact_name} with value #{self.host.facts[parsed_fact_name]}"
+        hostgroup = hostgroup.gsub(/\%\{#{parsed_fact_name}\}/, self.host.facts[parsed_fact_name])
+      else
+        # Fact does not exist on the host, abort parsing and return an empty string
+        Rails.logger.info "DefaultHostgroupMatch: Fact #{parsed_fact_name} not found on host #{self.host.facts[hostname]}"
+        return ""
+      end
+    end
+
+    return hostgroup
   end
 end
