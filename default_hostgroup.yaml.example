@@ -15,6 +15,8 @@
 # List the regexes in the order of priority, you can have as many as you like. The
 # first one to match will be used. Debug statements are written to the log if you
 # are getting the wrong group applied.
+# Look for DefaultHostgroupMatch in production.log to find logs related to this
+# plugin
 ---
 :default_hostgroup:
   :facts_map:
@@ -25,3 +27,7 @@
       "osfamily": "Darwin"
     "Base":
       "hostname": ".*"
+    "debian/11":
+      "os::distro::codename": "bullseye"
+    "default/windows/server2019":
+      "os::windows::product_name": '^Windows Server 2019 .*'
