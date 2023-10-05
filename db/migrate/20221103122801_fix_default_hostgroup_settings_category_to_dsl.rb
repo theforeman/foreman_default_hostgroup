@@ -2,8 +2,6 @@
 
 class FixDefaultHostgroupSettingsCategoryToDsl < ActiveRecord::Migration[6.0]
   def up
-    # rubocop:disable Rails/SkipsModelValidations
-    Setting.where(category: 'Setting::DefaultHostgroup').update_all(category: 'Setting')
-    # rubocop:enable Rails/SkipsModelValidations
+    # historical placeholder, this is no longer needed
   end
 end
