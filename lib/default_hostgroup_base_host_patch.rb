@@ -24,7 +24,7 @@ module DefaultHostgroupBaseHostPatch
       # Check settings are created
       return result unless settings_exist?
 
-      Rails.logger.debug "DefaultHostgroupMatch: performing Hostgroup match"
+      Rails.logger.debug 'DefaultHostgroupMatch: performing Hostgroup match'
 
       return result unless host_new_or_forced?
       return result unless host_has_no_hostgroup_or_forced?
@@ -52,13 +52,13 @@ module DefaultHostgroupBaseHostPatch
       hg = Hostgroup.find_by(title: group_name)
       return hg if hg.present? && group_matches?(facts)
     end
-    Rails.logger.info "No match ..."
+    Rails.logger.info 'No match ...'
     false
   end
 
   def group_matches?(facts)
     facts.each do |fact_name, fact_regex|
-      fact_regex.gsub!(%r{(\A/|/\z)}, "")
+      fact_regex.gsub!(%r{(\A/|/\z)}, '')
       host_fact_value = self.host.facts[fact_name]
       Rails.logger.info "Fact = #{fact_name}"
       Rails.logger.info "Regex = #{fact_regex}"
@@ -69,7 +69,7 @@ module DefaultHostgroupBaseHostPatch
 
   def settings_exist?
     unless SETTINGS[:default_hostgroup] && SETTINGS[:default_hostgroup][:facts_map]
-      Rails.logger.warn "DefaultHostgroupMatch: Could not load :default_hostgroup map from Settings."
+      Rails.logger.warn 'DefaultHostgroupMatch: Could not load :default_hostgroup map from Settings.'
       return false
     end
     true
@@ -80,7 +80,7 @@ module DefaultHostgroupBaseHostPatch
       # hosts have already been saved during import_host, so test the creation age instead
       new_host = ((Time.current - self.host.created_at) < 300)
       unless new_host && self.host.hostgroup.nil? && self.host.reports.empty?
-        Rails.logger.debug "DefaultHostgroupMatch: skipping, host exists"
+        Rails.logger.debug 'DefaultHostgroupMatch: skipping, host exists'
         return false
       end
     end
@@ -90,7 +90,7 @@ module DefaultHostgroupBaseHostPatch
   def host_has_no_hostgroup_or_forced?
     unless Setting[:force_hostgroup_match]
       if self.host.hostgroup.present?
-        Rails.logger.debug "DefaultHostgroupMatch: skipping, host has hostgroup"
+        Rails.logger.debug 'DefaultHostgroupMatch: skipping, host has hostgroup'
         return false
       end
     end

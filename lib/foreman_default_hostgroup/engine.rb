@@ -1,8 +1,8 @@
-require "default_hostgroup_base_host_patch"
+require 'default_hostgroup_base_host_patch'
 
 module ForemanDefaultHostgroup
   class Engine < ::Rails::Engine
-    engine_name "foreman_default_hostgroup"
+    engine_name 'foreman_default_hostgroup'
 
     config.autoload_paths += Dir["#{config.root}/app/models"]
 
@@ -13,10 +13,10 @@ module ForemanDefaultHostgroup
       end
     end
 
-    initializer "foreman_default_hostgroup.register_plugin",
+    initializer 'foreman_default_hostgroup.register_plugin',
                 before: :finisher_hook do
       Foreman::Plugin.register :foreman_default_hostgroup do
-        requires_foreman ">= 3.0"
+        requires_foreman '>= 3.0'
 
         settings do
           category(:default_hostgroup, N_('Default Hostgroup')) do
