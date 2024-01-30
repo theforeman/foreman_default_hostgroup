@@ -88,12 +88,10 @@ module DefaultHostgroupBaseHostPatch
   end
 
   def host_has_no_hostgroup_or_forced?
-    unless Setting[:force_hostgroup_match]
-      if host.hostgroup.present?
+    if !Setting[:force_hostgroup_match] && host.hostgroup.present?
         Rails.logger.debug 'DefaultHostgroupMatch: skipping, host has hostgroup'
         return false
       end
-    end
     true
   end
 end
