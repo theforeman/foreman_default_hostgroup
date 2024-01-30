@@ -37,7 +37,7 @@ module DefaultHostgroupBaseHostPatch
       host.hostgroup = new_hostgroup
       host.environment = new_hostgroup.environment if Setting[:force_host_environment] == true and facts[:_type] == :puppet
       host.save(validate: false)
-      Rails.logger.info "DefaultHostgroupMatch: #{facts["hostname"]} added to #{new_hostgroup}"
+      Rails.logger.info "DefaultHostgroupMatch: #{facts['hostname']} added to #{new_hostgroup}"
 
       result
     end
