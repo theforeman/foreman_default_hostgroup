@@ -34,9 +34,9 @@ module DefaultHostgroupBaseHostPatch
 
       return result unless new_hostgroup
 
-      self.host.hostgroup = new_hostgroup
-      self.host.environment = new_hostgroup.environment if Setting[:force_host_environment] == true and facts[:_type] == :puppet
-      self.host.save(validate: false)
+      host.hostgroup = new_hostgroup
+      host.environment = new_hostgroup.environment if Setting[:force_host_environment] == true and facts[:_type] == :puppet
+      host.save(validate: false)
       Rails.logger.info "DefaultHostgroupMatch: #{facts["hostname"]} added to #{new_hostgroup}"
 
       result
@@ -59,7 +59,7 @@ module DefaultHostgroupBaseHostPatch
   def group_matches?(facts)
     facts.each do |fact_name, fact_regex|
       fact_regex.gsub!(%r{(\A/|/\z)}, '')
-      host_fact_value = self.host.facts[fact_name]
+      host_fact_value = host.facts[fact_name]
       Rails.logger.info "Fact = #{fact_name}"
       Rails.logger.info "Regex = #{fact_regex}"
       return true if Regexp.new(fact_regex).match?(host_fact_value)
@@ -78,8 +78,8 @@ module DefaultHostgroupBaseHostPatch
   def host_new_or_forced?
     if Setting[:force_hostgroup_match_only_new]
       # hosts have already been saved during import_host, so test the creation age instead
-      new_host = ((Time.current - self.host.created_at) < 300)
-      unless new_host && self.host.hostgroup.nil? && self.host.reports.empty?
+      new_host = ((Time.current - host.created_at) < 300)
+      unless new_host && host.hostgroup.nil? && host.reports.empty?
         Rails.logger.debug 'DefaultHostgroupMatch: skipping, host exists'
         return false
       end
@@ -89,7 +89,7 @@ module DefaultHostgroupBaseHostPatch
 
   def host_has_no_hostgroup_or_forced?
     unless Setting[:force_hostgroup_match]
-      if self.host.hostgroup.present?
+      if host.hostgroup.present?
         Rails.logger.debug 'DefaultHostgroupMatch: skipping, host has hostgroup'
         return false
       end
