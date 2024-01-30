@@ -19,4 +19,6 @@ Gem::Specification.new do |s|
   s.homepage = 'https://github.com/theforeman/foreman_default_hostgroup'
   s.license = 'GPL-3.0'
   s.summary = 'Default Hostgroup Plugin for Foreman'
+
+  s.required_ruby_version = '>= 2.7', '< 4'
 end
