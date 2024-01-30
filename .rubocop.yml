@@ -43,3 +43,6 @@ Style/OptionalBooleanParameter:
 
 Style/RedundantBegin:
   Enabled: false
+
+Rails/RakeEnvironment:
+  Enabled: false
