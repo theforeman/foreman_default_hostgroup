@@ -39,7 +39,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
   end
 
   def setup_host_and_facts
-    raw = JSON.parse(File.read(File.expand_path(File.dirname(__FILE__) + '/facts.json')))
+    raw = JSON.parse(File.read(File.join(__dir__, 'facts.json')))
     @name = raw['name']
     @host = Host.import_host(raw['name'], 'puppet')
     @facts = raw['facts']
