@@ -17,14 +17,11 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     # The settings.yml fixture in Core wipes out the Setting table,
     # so we use FactoryBot to re-create it
     FactoryBot.create(:setting,
-                      name: 'force_hostgroup_match',
-                      category: 'Setting')
+                      name: 'force_hostgroup_match')
     FactoryBot.create(:setting,
-                      name: 'force_hostgroup_match_only_new',
-                      category: 'Setting')
+                      name: 'force_hostgroup_match_only_new')
     FactoryBot.create(:setting,
-                      name: 'force_host_environment',
-                      category: 'Setting')
+                      name: 'force_host_environment')
     # Set the defaults
     Setting[:force_hostgroup_match] = false
     Setting[:force_hostgroup_match_only_new] = true
