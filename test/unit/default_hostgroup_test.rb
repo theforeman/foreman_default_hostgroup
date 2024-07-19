@@ -44,7 +44,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
 
   context 'import_facts_with_match_hostgroup' do
     test 'matched host is saved with new hostgroup' do
-      assert @host.import_facts(@facts)
+      assert HostFactImporter.new(@host).import_facts(@facts)
       assert_equal Hostgroup.find_by(name: 'Test Default'), Host.find_by(name: @name).hostgroup
     end
 
@@ -53,7 +53,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
       @host.hostgroup = hostgroup
       @host.save(validate: false)
 
-      assert @host.import_facts(@facts)
+      assert HostFactImporter.new(@host).import_facts(@facts)
       assert_equal hostgroup, Host.find_by(name: @name).hostgroup
     end
 
@@ -61,7 +61,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
       @host.created_at = Time.current - 1000
       @host.save(validate: false)
 
-      assert @host.import_facts(@facts)
+      assert HostFactImporter.new(@host).import_facts(@facts)
       assert_not Host.find_by(name: @name).hostgroup
     end
   end
@@ -70,7 +70,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     # takes a config map, returns a group or false
     test 'match a single hostgroup' do
       facts_map = SETTINGS[:default_hostgroup][:facts_map]
-      assert @host.import_facts(@facts, nil, true)
+      assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
       assert_equal Hostgroup.find_by(name: 'Test Default'), @host.find_match(facts_map)
     end
 
@@ -78,7 +78,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
       facts_map = SETTINGS[:default_hostgroup][:facts_map] = {
         'Test Default' => { 'hostname' => 'nosuchhost' }
       }
-      assert @host.import_facts(@facts, nil, true)
+      assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
       assert_not @host.find_match(facts_map)
     end
 
@@ -87,7 +87,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
         'Test Default' => { 'hostname' => '.*' },
         'Some Other Group' => { 'hostname' => '/\.lan$/' }
       }
-      assert @host.import_facts(@facts, nil, true)
+      assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
       assert_equal Hostgroup.find_by(name: 'Test Default'), @host.find_match(facts_map)
     end
 
@@ -96,7 +96,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
         'Some Other Group' => { 'hostname' => '.*' },
         'Test Default' => { 'hostname' => '/\.lan$/' }
       }
-      assert @host.import_facts(@facts, nil, true)
+      assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
       assert_equal Hostgroup.find_by(name: 'Test Default'), @host.find_match(facts_map)
     end
   end
@@ -105,31 +105,31 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     # passing a hash of (group_name, regex) pairs
     test 'full regex matches' do
       regex = { 'hostname' => '^sinn1636.lan$' }
-      assert @host.import_facts(@facts, nil, true)
+      assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
       assert @host.group_matches?(regex)
     end
 
     test 'partial regex matches' do
       regex = { 'hostname' => '.lan$' }
-      assert @host.import_facts(@facts, nil, true)
+      assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
       assert @host.group_matches?(regex)
     end
 
     test 'regex slashes are stripped' do
       regex = { 'hostname' => '/\.lan$/' }
-      assert @host.import_facts(@facts, nil, true)
+      assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
       assert @host.group_matches?(regex)
     end
 
     test 'invalid keys are ignored' do
       regex = { 'nosuchfact' => '.*' }
-      assert @host.import_facts(@facts, nil, true)
+      assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
       assert_not @host.group_matches?(regex)
     end
 
     test 'unmatched values are ignored' do
       regex = { 'hostname' => 'nosuchname' }
-      assert @host.import_facts(@facts, nil, true)
+      assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
       assert_not @host.group_matches?(regex)
     end
 
@@ -139,7 +139,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
         'osfamily' => 'nosuchos',
         'hostname' => '.lan$'
       }
-      assert @host.import_facts(@facts, nil, true)
+      assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
       assert @host.group_matches?(regex)
     end
   end
