@@ -71,7 +71,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     test 'match a single hostgroup' do
       facts_map = SETTINGS[:default_hostgroup][:facts_map]
       assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
-      assert_equal Hostgroup.find_by(name: 'Test Default'), @host.find_match(facts_map)
+      assert_equal Hostgroup.find_by(name: 'Test Default'), HostFactImporter.new(@host).find_match(facts_map)
     end
 
     test 'returns false for no match' do
@@ -79,7 +79,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
         'Test Default' => { 'hostname' => 'nosuchhost' }
       }
       assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
-      assert_not @host.find_match(facts_map)
+      assert_not HostFactImporter.new(@host).find_match(facts_map)
     end
 
     test 'matches first available hostgroup' do
@@ -88,7 +88,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
         'Some Other Group' => { 'hostname' => '/\.lan$/' }
       }
       assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
-      assert_equal Hostgroup.find_by(name: 'Test Default'), @host.find_match(facts_map)
+      assert_equal Hostgroup.find_by(name: 'Test Default'), HostFactImporter.new(@host).find_match(facts_map)
     end
 
     test 'nonexistant groups are ignored' do
@@ -97,7 +97,7 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
         'Test Default' => { 'hostname' => '/\.lan$/' }
       }
       assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
-      assert_equal Hostgroup.find_by(name: 'Test Default'), @host.find_match(facts_map)
+      assert_equal Hostgroup.find_by(name: 'Test Default'), HostFactImporter.new(@host).find_match(facts_map)
     end
   end
 
@@ -106,31 +106,31 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
     test 'full regex matches' do
       regex = { 'hostname' => '^sinn1636.lan$' }
       assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
-      assert @host.group_matches?(regex)
+      assert HostFactImporter.new(@host).group_matches?(regex)
     end
 
     test 'partial regex matches' do
       regex = { 'hostname' => '.lan$' }
       assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
-      assert @host.group_matches?(regex)
+      assert HostFactImporter.new(@host).group_matches?(regex)
     end
 
     test 'regex slashes are stripped' do
       regex = { 'hostname' => '/\.lan$/' }
       assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
-      assert @host.group_matches?(regex)
+      assert HostFactImporter.new(@host).group_matches?(regex)
     end
 
     test 'invalid keys are ignored' do
       regex = { 'nosuchfact' => '.*' }
       assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
-      assert_not @host.group_matches?(regex)
+      assert_not HostFactImporter.new(@host).group_matches?(regex)
     end
 
     test 'unmatched values are ignored' do
       regex = { 'hostname' => 'nosuchname' }
       assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
-      assert_not @host.group_matches?(regex)
+      assert_not HostFactImporter.new(@host).group_matches?(regex)
     end
 
     test 'multiple entries with invalid keys / values match' do
@@ -140,66 +140,66 @@ class DefaultHostgroupTest < ActiveSupport::TestCase
         'hostname' => '.lan$'
       }
       assert HostFactImporter.new(@host).import_facts(@facts, nil, true)
-      assert @host.group_matches?(regex)
+      assert HostFactImporter.new(@host).group_matches?(regex)
     end
   end
 
   context 'settings_exist?' do
     test 'true when Settings exist' do
       h = FactoryBot.create(:host)
-      assert h.settings_exist?
+      assert HostFactImporter.new(h).settings_exist?
     end
 
     test 'false when Settings are missing' do
       SETTINGS[:default_hostgroup] = {}
       h = FactoryBot.create(:host)
-      assert_not h.settings_exist?
+      assert_not HostFactImporter.new(h).settings_exist?
     end
   end
 
   context 'host_new_or_forced?' do
     test 'true when host is new' do
       h = FactoryBot.create(:host, created_at: Time.current)
-      assert h.host_new_or_forced?
+      assert HostFactImporter.new(h).host_new_or_forced?
     end
 
     test 'false when host has existed for > 300s' do
       h = FactoryBot.create(:host, created_at: Time.current - 1000)
-      assert_not h.host_new_or_forced?
+      assert_not HostFactImporter.new(h).host_new_or_forced?
     end
 
     test 'false when host has a hostgroup' do
       h = FactoryBot.create(:host, :with_hostgroup, created_at: Time.current)
-      assert_not h.host_new_or_forced?
+      assert_not HostFactImporter.new(h).host_new_or_forced?
     end
 
     test 'false when host has reports' do
       h = FactoryBot.create(:host, :with_reports, created_at: Time.current)
-      assert_not h.host_new_or_forced?
+      assert_not HostFactImporter.new(h).host_new_or_forced?
     end
 
     test 'true when setting is forced' do
       Setting[:force_hostgroup_match_only_new] = false
       h = FactoryBot.create(:host, :with_hostgroup, created_at: Time.current)
-      assert h.host_new_or_forced?
+      assert HostFactImporter.new(h).host_new_or_forced?
     end
   end
 
   context 'host_has_no_hostgroup_or_forced?' do
     test 'true if host has no hostgroup' do
       h = FactoryBot.create(:host)
-      assert h.host_has_no_hostgroup_or_forced?
+      assert HostFactImporter.new(h).host_has_no_hostgroup_or_forced?
     end
 
     test 'false if host has hostgroup' do
       h = FactoryBot.create(:host, :with_hostgroup)
-      assert_not h.host_has_no_hostgroup_or_forced?
+      assert_not HostFactImporter.new(h).host_has_no_hostgroup_or_forced?
     end
 
     test 'true if host has hostgroup and setting forced' do
       Setting[:force_hostgroup_match] = true
       h = FactoryBot.create(:host, :with_hostgroup)
-      assert h.host_has_no_hostgroup_or_forced?
+      assert HostFactImporter.new(h).host_has_no_hostgroup_or_forced?
     end
   end
 end
