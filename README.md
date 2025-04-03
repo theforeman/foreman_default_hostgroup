@@ -56,6 +56,8 @@ There are also two more settings under `Settings -> DefaultHostgroup`
 | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `force_hostgroup_match`          | Setting this to `true` will perform matching even on hosts that already have a hostgroup set. Enabling this needs `force_hostgroup_match_only_new` to be `false`.  Default: `false`                                  |
 | `force_hostgroup_match_only_new` | Setting this to `true` will only perform matching when a host uploads its facts for the first time, i.e. after provisioning or when adding an existing puppetmaster and thus its nodes into foreman. Default: `true` |
+| `force_host_environment` | Apply hostgroup's environment to host even if a host already has a different one.  Default: `true`) |
+| `replace_facts_in_hostgroup_name` | Allow replacement of facts in the hostgroup name. Facts can be accessed via **%{fact_name}**. Due to the facts being generated on the client, their content may be altered which can cause a security issue! Default: `false` |
 
 ## TODO
 

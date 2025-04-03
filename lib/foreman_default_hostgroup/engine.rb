@@ -32,6 +32,10 @@ module ForemanDefaultHostgroup
                     type: :boolean,
                     description: "Apply hostgroup's environment to host even if a host already has a different one",
                     default: true)
+            setting('replace_facts_in_hostgroup_name',
+                    type: :boolean,
+                    description: "Allow replacement of facts in the hostgroup name. This may cause a security issue, please refer to the documentation!",
+                    default: false)
           end
         end
       end
